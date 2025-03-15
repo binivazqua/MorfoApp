@@ -1,0 +1,56 @@
+name: morflutter
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.5.0-169.0.dev <4.0.0'
+
+dependencies:
+  cupertino_battery_indicator: ^1.1.0
+  firebase_auth: ^5.1.0
+  firebase_core: ^3.1.0
+  firebase_database: ^11.0.1
+  fl_chart: ^0.68.0
+  flutter:
+    sdk: flutter
+  flutter_animate: ^4.5.0
+  google_nav_bar: ^5.0.6
+  shared_preferences: ^2.2.3
+  smooth_page_indicator: ^1.2.0+3
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: Lausane400
+      fonts:
+        - asset: lib/design/fonts/TWKLausanne-400.otf
+    - family: Lausane650
+      fonts:
+        - asset: lib/design/fonts/TWKLausanne-650.otf
+
+
+  assets:
+    - lib/design/logos/cuadrado_blanco_negro-removebg-preview.png
+    - lib/design/logos/rectangular_vino_violette-removebg-preview-2.png
+    - lib/design/logos/cuadrado_blanco_trippypurple-removebg-preview.png
+    - lib/design/logos/principal_morado_negro-removebg-preview.png
+    - lib/design/logos/rectangular_vino_trippypurplep.png
+    - lib/design/renders/data_vis_morfo.png
+    - lib/design/renders/mantainance.png
+    - lib/design/renders/sbk101.png
+    - lib/design/renders/my_sbk101.png
+    - lib/design/pics/doc1.jpeg
+    - lib/design/pics/developer.jpg
+    - lib/design/pics/docasses.jpeg
+    
+
+    
