@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:morflutter/display_info/sensorData.dart';
 import 'package:morflutter/starting_pages/auth/loginPage.dart';
 import 'package:morflutter/starting_pages/auth/mainPage.dart';
+import 'package:morflutter/starting_pages/tests/bluetoothble.dart';
 import 'package:morflutter/starting_pages/tests/sendAndFetch.dart';
 import 'package:morflutter/starting_pages/tests/tabSendData.dart';
 import 'package:morflutter/starting_pages/ui/navigation/homeNavBar.dart';
@@ -55,7 +56,7 @@ class MainApp extends StatelessWidget {
                   'There is a fuckin error around here: ${snapshot.error.toString()}');
               return Text('Somethin went wrong!!!');
             } else if (snapshot.hasData) {
-              return MainPage();
+              return BLEScreen();
 
               return MorfoHomeNavBar(); // PRUEBAS DE DEDITOS
             } else {

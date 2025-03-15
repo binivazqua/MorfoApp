@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
+import 'package:morflutter/starting_pages/tests/bluetoothble.dart';
 import 'package:morflutter/starting_pages/ui/sbk101/my_sbk101.dart';
 import 'package:morflutter/starting_pages/ui/sbk101/sbk101_remoteControl.dart';
 
@@ -39,10 +40,8 @@ class AboutSbk101 extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SBK101RemoteControl()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => BLEScreen()));
                 },
                 child: Text(
                   'Conocer la mía',
