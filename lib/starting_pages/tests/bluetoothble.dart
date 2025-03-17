@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/foundation.dart'; // Needed for kIsWeb
@@ -12,13 +14,20 @@ class BLEScreen extends StatefulWidget {
 }
 
 class _BLEScreenState extends State<BLEScreen> {
+  // FIREBASE:
+  final MorfoDatabase = FirebaseDatabase.instance.ref('EMGData');
+  User? newUser = FirebaseAuth.instance.currentUser;
+
+  // BLE:
   FlutterBluePlus flutterBlue =
       FlutterBluePlus(); // instancia de BLE interactions
   BluetoothDevice? espDevice; // guarda al ESP después de escaneado
   BluetoothCharacteristic?
       espCharacteristic; // BLE characteristic -> comm channel donde se almacenan los datos.
+
+  // ADDITIONAL:
   List<ScanResult> scanResults = []; // lista de dispositivos detectados
-  String receivedData = "Sin datos";
+  int receivedData = 0;
   bool isScanning = false;
   bool isConnected = false;
 
@@ -31,6 +40,15 @@ class _BLEScreenState extends State<BLEScreen> {
     checkBluetoothSupport();
   }
 
+  /*
+  void sendEMGData() {
+    String? userUID = newUser?.uid;
+    String path = 'EMGData/${userUID}/';
+    MorfoDatabase.child(path).set({
+      'Valor': receivedData.trim(),
+    });
+  }
+*/
   Future<void> checkBluetoothSupport() async {
     if (await FlutterBluePlus.isSupported == false) {
       print("La función Bluetooth no está disponible en este dispositivo.");
@@ -77,6 +95,20 @@ class _BLEScreenState extends State<BLEScreen> {
     });
   }
 
+  int _convertToInt(List<int> value) {
+    if (value.length == 1) {
+      return value[0]; // Single-byte integer (0-255)
+    } else if (value.length == 2) {
+      return (value[1] << 8) | value[0]; // 16-bit integer (0-65535)
+    } else if (value.length == 4) {
+      return (value[3] << 24) |
+          (value[2] << 16) |
+          (value[1] << 8) |
+          value[0]; // 32-bit integer
+    }
+    return 0; // Default if format is unexpected
+  }
+
   void connectToDevice(BluetoothDevice device) async {
     setState(() {
       espDevice = device;
@@ -95,7 +127,7 @@ class _BLEScreenState extends State<BLEScreen> {
             await espCharacteristic!.setNotifyValue(true);
             espCharacteristic!.lastValueStream.listen((value) {
               setState(() {
-                receivedData = String.fromCharCodes(value);
+                receivedData = _convertToInt(value);
               });
             });
             break;
@@ -136,7 +168,7 @@ class _BLEScreenState extends State<BLEScreen> {
         await espDevice!.disconnect();
         setState(() {
           espDevice = null;
-          receivedData = "Desconectado.";
+          receivedData = 0;
         });
       }
     }
@@ -228,7 +260,7 @@ class _BLEScreenState extends State<BLEScreen> {
                           style:
                               TextStyle(fontSize: 20, color: darkPeriwinkle)),
                       SizedBox(height: 10),
-                      Text(receivedData,
+                      Text(receivedData.toString(),
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
                       SizedBox(height: 20),

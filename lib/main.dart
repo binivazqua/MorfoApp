@@ -56,7 +56,7 @@ class MainApp extends StatelessWidget {
                   'There is a fuckin error around here: ${snapshot.error.toString()}');
               return Text('Somethin went wrong!!!');
             } else if (snapshot.hasData) {
-              return BLEScreen();
+              return MainPage();
 
               return MorfoHomeNavBar(); // PRUEBAS DE DEDITOS
             } else {
