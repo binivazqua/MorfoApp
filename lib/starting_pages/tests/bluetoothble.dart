@@ -40,15 +40,19 @@ class _BLEScreenState extends State<BLEScreen> {
     checkBluetoothSupport();
   }
 
-  /*
-  void sendEMGData() {
+  Future<void> sendEMGData() async {
     String? userUID = newUser?.uid;
-    String path = 'EMGData/${userUID}/';
-    MorfoDatabase.child(path).set({
-      'Valor': receivedData.trim(),
-    });
+    String path = '${userUID}/';
+    try {
+      await MorfoDatabase.child(path).set({
+        'Valor': receivedData,
+      });
+      print('Valores EMG enviados satisfactoriamente');
+    } catch (error) {
+      print('Datos EMG no enviados. Error: ${error}');
+    }
   }
-*/
+
   Future<void> checkBluetoothSupport() async {
     if (await FlutterBluePlus.isSupported == false) {
       print("La función Bluetooth no está disponible en este dispositivo.");
@@ -128,6 +132,7 @@ class _BLEScreenState extends State<BLEScreen> {
             espCharacteristic!.lastValueStream.listen((value) {
               setState(() {
                 receivedData = _convertToInt(value);
+                sendEMGData();
               });
             });
             break;
