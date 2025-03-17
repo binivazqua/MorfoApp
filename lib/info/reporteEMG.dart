@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -84,29 +82,102 @@ class _ReporteEMGState extends State<ReporteEMG> {
 
     String path = 'EMGData/$userUID/';
 
-    return Scaffold(
-      appBar: AppBar(
-        foregroundColor: lilyPurple,
-        backgroundColor: draculaPurple,
-        title: Image(
-          width: 120,
-          image: AssetImage(
-              'lib/design/logos/principal_morado_negro-removebg-preview.png'),
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  'Historial de lecturas',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              StreamBuilder(
+                  stream: MorfoDatabase.child(path).onValue,
+                  builder: (context, snapshot) {
+                    /* 
+                      Donde:
+                        - snapshot: resultado del data stream.
+                        Si no hay datos de firebase o aún está vacía la db:
+                    
+                    */
+                    if (!snapshot.hasData ||
+                        snapshot.data?.snapshot.value == null) {
+                      return Center(
+                        child: Text('No hay datos para mostrar.'),
+                      );
+                    }
+
+                    // Convertir la info en un Map<>
+                    final Map<dynamic, dynamic> rawData =
+                        snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
+
+                    List<EMGData> lecturas = [];
+
+                    // convertir en EMGData objects:
+                    rawData.forEach((key, value) {
+                      if (value is Map<dynamic, dynamic>) {
+                        lecturas.add(EMGData.fromMap(
+                            key, Map<String, dynamic>.from(value)));
+                      }
+                    });
+
+                    lecturas.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+                    // Convertir de EMGData a DataRow
+                    List<DataRow> rows = lecturas.map((data) {
+                      return DataRow(cells: [
+                        DataCell(Text(data.timestamp)),
+                        DataCell(Text(data.muscle)),
+                        DataCell(Text(data.valor.toString())),
+                        DataCell(Text(data.secs.toString())),
+                      ]);
+                    }).toList();
+
+                    return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          height: 500,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: DataTable(columns: [
+                              // donde las columnas son fixed y las filas vienen del stream builder.
+                              DataColumn(
+                                  label: Text(
+                                'Fecha',
+                                style: TextStyle(color: darkPeriwinkle),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'Musculo',
+                                style: TextStyle(color: darkPeriwinkle),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'Valor EMG',
+                                style: TextStyle(color: darkPeriwinkle),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'Seg',
+                                style: TextStyle(color: darkPeriwinkle),
+                              )),
+                            ], rows: rows),
+                          ),
+                        ));
+                  }),
+              ElevatedButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
+                  child: Text('Real Time EMG',
+                      style: TextStyle(color: Colors.white)))
+            ],
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Text('Historial de lecturas'),
-          StreamBuilder(
-              stream: MorfoDatabase.child(path).onValue,
-              builder: (context, snapshot) {
-                if (snapshot.hasData || snapshot.data?.snapshot.value == null) {
-                  return Center(
-                    child: Text('No hay datos para mostrar.'),
-                  );
-                }
-              })
-        ],
       ),
     );
   }
