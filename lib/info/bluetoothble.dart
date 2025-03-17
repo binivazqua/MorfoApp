@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/foundation.dart'; // Needed for kIsWeb
@@ -140,13 +143,36 @@ class _BLEScreenState extends State<BLEScreen> {
           if (characteristic.uuid == characteristicUUID) {
             espCharacteristic = characteristic;
             await espCharacteristic!.setNotifyValue(true);
-            espCharacteristic!.lastValueStream.listen((value) {
+
+            // Real time stream updateess
+            StreamController<int> emgController = StreamController<int>();
+
+            // ✅ Listen for BLE data
+            StreamSubscription<List<int>> bleSubscription =
+                espCharacteristic!.lastValueStream.listen((value) {
+              int emgValue = _convertToInt(value);
+
               setState(() {
-                receivedData = _convertToInt(value);
+                receivedData = emgValue;
                 sendEMGData();
               });
+
+              // ✅ Send data to the graph
+              if (!emgController.isClosed) {
+                emgController.add(emgValue);
+              }
             });
-            break;
+
+            // ir a página de graph
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            GraphicScreen(emgStream: emgController.stream)))
+                .then((_) {
+              emgController.close();
+              bleSubscription.cancel();
+            });
           }
         }
       }
@@ -301,7 +327,7 @@ class _BLEScreenState extends State<BLEScreen> {
                                         builder: (context) => ReporteEMG()));
                               },
                               child: Text(
-                                "Reporte",
+                                "Gráficos",
                                 style: TextStyle(color: Colors.white),
                               ),
                               style: ButtonStyle(
@@ -319,5 +345,70 @@ class _BLEScreenState extends State<BLEScreen> {
         ),
       ),
     );
+  }
+}
+
+class GraphicScreen extends StatefulWidget {
+  final Stream<int> emgStream; // async data handling from ble
+
+  GraphicScreen({required this.emgStream});
+
+  @override
+  _GraphicScreenState createState() => _GraphicScreenState();
+}
+
+class _GraphicScreenState extends State<GraphicScreen> {
+  List<FlSpot> emgGraphData = [];
+  int counter = 0;
+  StreamSubscription<int>? emgSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen to EMG stream and store subscription
+    emgSubscription = widget.emgStream.listen((emgValue) {
+      if (!mounted) return;
+
+      setState(() {
+        emgGraphData.add(FlSpot(counter.toDouble(), emgValue.toDouble()));
+        counter++;
+
+        if (emgGraphData.length > 30) {
+          emgGraphData.removeAt(0);
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    emgSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Datitos'),
+        ),
+        body: LineChart(LineChartData(
+          lineBarsData: [
+            LineChartBarData(
+                spots: emgGraphData,
+                isCurved: true,
+                barWidth: 3,
+                color: darkPeriwinkle,
+                dotData: FlDotData(show: true),
+                belowBarData: BarAreaData(show: true))
+          ],
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: true, reservedSize: 30)),
+            bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          borderData: FlBorderData(show: true),
+        )));
   }
 }
