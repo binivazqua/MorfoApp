@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +80,10 @@ class _ReporteEMGState extends State<ReporteEMG> {
 
   @override
   Widget build(BuildContext context) {
+    String? userUID = currentUser?.uid;
+
+    String path = 'EMGData/$userUID/';
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: lilyPurple,
@@ -88,7 +94,20 @@ class _ReporteEMGState extends State<ReporteEMG> {
               'lib/design/logos/principal_morado_negro-removebg-preview.png'),
         ),
       ),
-      body: Column(),
+      body: Column(
+        children: [
+          Text('Historial de lecturas'),
+          StreamBuilder(
+              stream: MorfoDatabase.child(path).onValue,
+              builder: (context, snapshot) {
+                if (snapshot.hasData || snapshot.data?.snapshot.value == null) {
+                  return Center(
+                    child: Text('No hay datos para mostrar.'),
+                  );
+                }
+              })
+        ],
+      ),
     );
   }
 }
