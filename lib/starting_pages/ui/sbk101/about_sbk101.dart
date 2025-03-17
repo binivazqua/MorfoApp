@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
-import 'package:morflutter/starting_pages/tests/bluetoothble.dart';
+import 'package:morflutter/info/bluetoothble.dart';
 import 'package:morflutter/starting_pages/ui/sbk101/my_sbk101.dart';
 import 'package:morflutter/starting_pages/ui/sbk101/sbk101_remoteControl.dart';
 

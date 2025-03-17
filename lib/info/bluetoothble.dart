@@ -6,7 +6,8 @@ import 'package:flutter/foundation.dart'; // Needed for kIsWeb
 import 'package:gif/gif.dart';
 import 'dart:io';
 
-import 'package:morflutter/design/constants.dart'; // Needed for platform-specific checks
+import 'package:morflutter/design/constants.dart';
+import 'package:morflutter/info/reporteEMG.dart'; // Needed for platform-specific checks
 
 class BLEScreen extends StatefulWidget {
   @override
@@ -41,11 +42,21 @@ class _BLEScreenState extends State<BLEScreen> {
   }
 
   Future<void> sendEMGData() async {
+    String _timestamp = DateTime.now()
+        .toUtc()
+        .toIso8601String()
+        .replaceAll('.', '-')
+        .replaceAll(':', '-'); // Formato sumamente específico.
+    String _timestampred = DateTime.now().second.toString();
     String? userUID = newUser?.uid;
-    String path = '${userUID}/';
+    String path = '$userUID/$_timestamp';
+    print(path);
+
     try {
       await MorfoDatabase.child(path).set({
+        'Tiempo': _timestampred,
         'Valor': receivedData,
+        'Musculo': 'M1',
       });
       print('Valores EMG enviados satisfactoriamente');
     } catch (error) {
@@ -269,16 +280,35 @@ class _BLEScreenState extends State<BLEScreen> {
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
                       SizedBox(height: 20),
-                      if (espDevice != null)
-                        ElevatedButton(
-                          onPressed: disconnectDevice,
-                          child: Text(
-                            "Disconnect",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  WidgetStatePropertyAll(lilyPurple)),
+                      if (isConnected)
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: disconnectDevice,
+                              child: Text(
+                                "Desconectar",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(lilyPurple)),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ReporteEMG()));
+                              },
+                              child: Text(
+                                "Reporte",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(lilyPurple)),
+                            ),
+                          ],
                         ),
                     ],
                   ),

@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:morflutter/display_info/sensorData.dart';
 import 'package:morflutter/starting_pages/auth/loginPage.dart';
 import 'package:morflutter/starting_pages/auth/mainPage.dart';
-import 'package:morflutter/starting_pages/tests/bluetoothble.dart';
+import 'package:morflutter/info/bluetoothble.dart';
 import 'package:morflutter/starting_pages/tests/sendAndFetch.dart';
 import 'package:morflutter/starting_pages/tests/tabSendData.dart';
 import 'package:morflutter/starting_pages/ui/navigation/homeNavBar.dart';
