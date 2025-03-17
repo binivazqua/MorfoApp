@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/foundation.dart'; // Needed for kIsWeb
+import 'package:gif/gif.dart';
 import 'dart:io';
 
 import 'package:morflutter/design/constants.dart'; // Needed for platform-specific checks
@@ -19,6 +20,7 @@ class _BLEScreenState extends State<BLEScreen> {
   List<ScanResult> scanResults = []; // lista de dispositivos detectados
   String receivedData = "Sin datos";
   bool isScanning = false;
+  bool isConnected = false;
 
   final Guid serviceUUID = Guid("2E18CC93-EFBE-4927-AC92-0D229C122383");
   final Guid characteristicUUID = Guid("13909B07-0859-452F-AB6E-E5A4BC8D9DF4");
@@ -78,6 +80,7 @@ class _BLEScreenState extends State<BLEScreen> {
   void connectToDevice(BluetoothDevice device) async {
     setState(() {
       espDevice = device;
+      isConnected = true;
     });
 
     await espDevice!.connect();
@@ -153,70 +156,97 @@ class _BLEScreenState extends State<BLEScreen> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // Scanning Button
-            ElevatedButton(
-              onPressed: isScanning
-                  ? null
-                  : scanForDevices, // si está escaneando, el botón queda inhabilitado.
-              child:
-                  isScanning ? Text("Buscando...") : Text("Conectar con Orión"),
-            ),
-
-            // Device List
-            Container(
-              height: 200,
-              child: ListView.builder(
-                itemCount: scanResults.length,
-                itemBuilder: (context, index) {
-                  BluetoothDevice device = scanResults[index]
-                      .device; // 1 device per scan to access sus propiedades
-                  return ListTile(
-                    title: Text(device.advName.contains("ESP")
-                        ? device.advName
-                        : "Desconocido"),
-                    trailing: ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor:
-                              WidgetStatePropertyAll(darkPeriwinkle)),
-                      onPressed: () => connectToDevice(device),
-                      child: Text(
-                        "Conectar",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  );
-                },
+            Positioned(
+              top: 20,
+              child: Text(
+                '¡Estás a un paso!',
+                style: TextStyle(fontSize: 20),
               ),
             ),
-
-            // Received Data Display
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Text("EMG:",
-                      style: TextStyle(fontSize: 20, color: darkPeriwinkle)),
-                  SizedBox(height: 10),
-                  Text(receivedData,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 20),
-                  if (espDevice != null)
-                    ElevatedButton(
-                      onPressed: disconnectDevice,
-                      child: Text(
-                        "Disconnect",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              WidgetStatePropertyAll(darkPeriwinkle)),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (isScanning)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: Gif(
+                      image: AssetImage('lib/design/renders/scanning.gif'),
+                      placeholder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                      autostart: Autostart.loop,
                     ),
-                ],
-              ),
+                  ),
+                // Scanning Button
+                if (isScanning || !isConnected)
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(darkPeriwinkle),
+                        foregroundColor: WidgetStatePropertyAll(Colors.white)),
+                    onPressed: isScanning
+                        ? null
+                        : scanForDevices, // si está escaneando, el botón queda inhabilitado.
+                    child: isScanning ? Text("Buscando...") : Text("Conectar"),
+                  ),
+
+                // Device List
+                if (!isConnected)
+                  Container(
+                    height: 200,
+                    child: ListView.builder(
+                      itemCount: scanResults.length,
+                      itemBuilder: (context, index) {
+                        BluetoothDevice device = scanResults[index]
+                            .device; // 1 device per scan to access sus propiedades
+                        return ListTile(
+                          title: Text(device.advName.contains("ESP")
+                              ? device.advName
+                              : "Desconocido"),
+                          trailing: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    WidgetStatePropertyAll(lilyPurple)),
+                            onPressed: () => connectToDevice(device),
+                            child: Text(
+                              "Conectar",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                // Received Data Display
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Text("EMG:",
+                          style:
+                              TextStyle(fontSize: 20, color: darkPeriwinkle)),
+                      SizedBox(height: 10),
+                      Text(receivedData,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 20),
+                      if (espDevice != null)
+                        ElevatedButton(
+                          onPressed: disconnectDevice,
+                          child: Text(
+                            "Disconnect",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(lilyPurple)),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),

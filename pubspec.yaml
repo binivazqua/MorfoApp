@@ -16,6 +16,7 @@ dependencies:
     sdk: flutter
   flutter_animate: ^4.5.0
   flutter_blue_plus: ^1.35.3
+  gif: ^2.3.0
   google_nav_bar: ^5.0.6
   shared_preferences: ^2.2.3
   smooth_page_indicator: ^1.2.0+3
@@ -52,6 +53,7 @@ flutter:
     - lib/design/pics/doc1.jpeg
     - lib/design/pics/developer.jpg
     - lib/design/pics/docasses.jpeg
+    - lib/design/renders/scanning.gif
     
 
     
