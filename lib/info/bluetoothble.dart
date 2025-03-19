@@ -405,13 +405,32 @@ class _GraphicScreenState extends State<GraphicScreen> {
   StreamSubscription<int>? emgSubscription;
   double? lastMaxValue; // Stores the last max value to avoid duplicate alerts
 
+  Timer? readingTimer; // ✅ Controls the 10-second reading session
+  bool isReadingActive = false; // ✅ Prevents duplicate readings
+
   @override
   void initState() {
     super.initState();
 
-    // Listen to EMG stream and store subscription
+    isReadingActive = true; // ✅ Activate reading session
+
+    // Start 10-second timer
+    readingTimer = Timer(Duration(seconds: 10), () {
+      if (mounted) {
+        isReadingActive = false; // ✅ Stop recording
+        emgSubscription?.cancel(); // ✅ Stop BLE readings
+
+        double maxValue = findMaxValue(emgGraphData); // ✅ Find max value
+
+        // ✅ Show alert after 10 seconds
+        showMaxValueDialog(context, maxValue);
+      }
+    });
+
+    // ✅ Listen to EMG stream during the reading session
     emgSubscription = widget.emgStream.listen((emgValue) {
-      if (!mounted) return;
+      if (!mounted || !isReadingActive)
+        return; // ✅ Stop updating if session ends
 
       setState(() {
         emgGraphData.add(FlSpot(counter.toDouble(), emgValue.toDouble()));
@@ -420,36 +439,19 @@ class _GraphicScreenState extends State<GraphicScreen> {
         if (emgGraphData.length > 30) {
           emgGraphData.removeAt(0);
         }
-
-        // valor máximo
-        double maxValue = findMaxValue(emgGraphData);
-
-        // encontraar el máximo
-        if (lastMaxValue == null || maxValue > lastMaxValue!) {
-          lastMaxValue = maxValue; // updatea
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            showMaxValueDialog(context, maxValue);
-          });
-        }
       });
     });
   }
 
   @override
   void dispose() {
-    emgSubscription?.cancel();
+    emgSubscription?.cancel(); // ✅ Stop listening to BLE
+    readingTimer?.cancel(); // ✅ Cancel the reading timer
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Find the maximum value
-    double maxValue = findMaxValue(emgGraphData);
-
-    // Show the dialog after the frame has been rendered
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showMaxValueDialog(context, maxValue);
-    });
     return Scaffold(
         appBar: AppBar(
           foregroundColor: lilyPurple,
