@@ -54,6 +54,8 @@ flutter:
     - lib/design/pics/developer.jpg
     - lib/design/pics/docasses.jpeg
     - lib/design/renders/scanning.gif
+    - lib/design/renders/exoprintprot.png
+    - lib/design/renders/exoprintlogo.png
     
 
     

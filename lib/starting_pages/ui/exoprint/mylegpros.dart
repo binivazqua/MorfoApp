@@ -3,16 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/display_info/databaseLink.dart';
-import 'package:morflutter/starting_pages/ui/exoprint/mylegpros.dart';
+import 'package:morflutter/starting_pages/ui/exoprint/exoprint_dashboard.dart';
 
-class MySbk101 extends StatefulWidget {
-  const MySbk101({super.key});
+class MyExoprintLeg extends StatefulWidget {
+  const MyExoprintLeg({super.key});
 
   @override
-  State<MySbk101> createState() => _MySbk101State();
+  State<MyExoprintLeg> createState() => _MyExoprintLegState();
 }
 
-class _MySbk101State extends State<MySbk101> {
+class _MyExoprintLegState extends State<MyExoprintLeg> {
   void connectionSwitch() {
     setState(() {});
   }
@@ -24,19 +24,6 @@ class _MySbk101State extends State<MySbk101> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: darkPeriwinkle,
-          child: Icon(
-            Icons.e_mobiledata_rounded,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyExoprintLeg(),
-                ));
-          }),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(0, 0, 0, 0),
       ),
@@ -51,16 +38,23 @@ class _MySbk101State extends State<MySbk101> {
                 // MY SBK101
                 children: [
                   Text(
-                    'Mi SBK-101',
+                    'Mi EXOPrint',
                     style: TextStyle(
                         fontFamily: 'Lausane650',
                         fontSize: 20,
                         color: draculaPurple),
                   ),
+                  Text(
+                    'Transtibial con liner',
+                    style: TextStyle(fontSize: 15, color: draculaPurple),
+                  ),
 
                   SizedBox(height: 25),
                   //RENDER
-                  Image(image: AssetImage('lib/design/renders/my_sbk101.png')),
+                  Image(
+                    image: AssetImage('lib/design/renders/exoprintprot.png'),
+                    height: 250,
+                  ),
 
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -82,7 +76,7 @@ class _MySbk101State extends State<MySbk101> {
                         ),
                         Text('${(_value * 100).ceil()}%'),
                         Slider(
-                          activeColor: darkPeriwinkle,
+                          activeColor: Color.fromARGB(255, 0, 106, 103),
                           overlayColor: WidgetStatePropertyAll(lilyPurple),
                           value: _value,
                           min: 0.0,
@@ -96,7 +90,7 @@ class _MySbk101State extends State<MySbk101> {
                   // SERIAL NUM
                   Container(
                     decoration: BoxDecoration(
-                        color: darkPeriwinkle,
+                        color: Color.fromARGB(255, 45, 170, 158),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     width: 220,
                     height: 40,
@@ -134,7 +128,7 @@ class _MySbk101State extends State<MySbk101> {
                           Text('Óptimo'),
                           Icon(
                             Icons.check_circle_rounded,
-                            color: lilyPurple,
+                            color: Color.fromARGB(255, 0, 106, 103),
                           )
                         ],
                       ),
@@ -173,14 +167,16 @@ class _MySbk101State extends State<MySbk101> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => databaseReadTest()));
+                              builder: (context) => ProstheticDashboard()));
                     },
                     child: Text(
                       'Ir a mis datos',
                       style: TextStyle(color: morfoWhite),
                     ),
                     style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(darkPeriwinkle),
+                        backgroundColor: WidgetStatePropertyAll(
+                          Color.fromARGB(255, 0, 106, 103),
+                        ),
                         shadowColor: WidgetStatePropertyAll(draculaPurple)),
                   )
                 ],
