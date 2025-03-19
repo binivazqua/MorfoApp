@@ -296,47 +296,54 @@ class _BLEScreenState extends State<BLEScreen> {
                 // Received Data Display
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Text("EMG:",
-                          style:
-                              TextStyle(fontSize: 20, color: darkPeriwinkle)),
-                      SizedBox(height: 10),
-                      Text(receivedData.toString(),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 20),
-                      if (isConnected)
-                        Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: disconnectDevice,
-                              child: Text(
-                                "Desconectar",
-                                style: TextStyle(color: Colors.white),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("EMG:",
+                            style:
+                                TextStyle(fontSize: 20, color: darkPeriwinkle)),
+                        SizedBox(height: 10),
+                        Text(receivedData.toString(),
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 20),
+                        if (isConnected)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            spacing: 10,
+                            children: [
+                              ElevatedButton(
+                                onPressed: disconnectDevice,
+                                child: Text(
+                                  "Desconectar",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStatePropertyAll(lilyPurple)),
                               ),
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(lilyPurple)),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ReporteEMG()));
-                              },
-                              child: Text(
-                                "Gráficos",
-                                style: TextStyle(color: Colors.white),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ReporteEMG()));
+                                },
+                                child: Text(
+                                  "Gráficos",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStatePropertyAll(lilyPurple)),
                               ),
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(lilyPurple)),
-                            ),
-                          ],
-                        ),
-                    ],
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -391,24 +398,49 @@ class _GraphicScreenState extends State<GraphicScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Datitos'),
+          foregroundColor: lilyPurple,
+          backgroundColor: draculaPurple,
+          title: Image(
+              width: 120,
+              image: AssetImage(
+                  'lib/design/logos/principal_morado_negro-removebg-preview.png')),
         ),
-        body: LineChart(LineChartData(
-          lineBarsData: [
-            LineChartBarData(
-                spots: emgGraphData,
-                isCurved: true,
-                barWidth: 3,
-                color: darkPeriwinkle,
-                dotData: FlDotData(show: true),
-                belowBarData: BarAreaData(show: true))
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(
+                'Datos EMG',
+                style: TextStyle(fontSize: 25),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: LineChart(LineChartData(
+                    lineBarsData: [
+                      LineChartBarData(
+                          spots: emgGraphData,
+                          isCurved: true,
+                          barWidth: 3,
+                          color: lilyPurple,
+                          dotData: FlDotData(show: true),
+                          belowBarData: BarAreaData(show: true))
+                    ],
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                          sideTitles:
+                              SideTitles(showTitles: true, reservedSize: 30)),
+                      bottomTitles:
+                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    ),
+                    borderData: FlBorderData(show: true),
+                    backgroundColor: Colors.black)),
+              ),
+            ),
           ],
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true, reservedSize: 30)),
-            bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          ),
-          borderData: FlBorderData(show: true),
-        )));
+        ));
   }
 }
