@@ -364,10 +364,46 @@ class GraphicScreen extends StatefulWidget {
   _GraphicScreenState createState() => _GraphicScreenState();
 }
 
+/* ====================== MAX VALUE NOTIFIER ==================== */
+
+double findMaxValue(List<FlSpot> spots) {
+  if (spots.isEmpty) return 0.0; // no crash
+
+  double maxValue = spots[0].y; // primer valor
+  for (FlSpot spot in spots) {
+    if (spot.y > maxValue) {
+      maxValue = spot.y; // nuevo valor encontrado?
+    }
+  }
+  return maxValue;
+}
+
+void showMaxValueDialog(BuildContext context, double maxValue) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Valor máximo encontrado:"),
+        content: Text("El valor máximo es: $maxValue"),
+        actions: <Widget>[
+          TextButton(
+            child: Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+/* ================================================================= */
+
 class _GraphicScreenState extends State<GraphicScreen> {
   List<FlSpot> emgGraphData = [];
   int counter = 0;
   StreamSubscription<int>? emgSubscription;
+  double? lastMaxValue; // Stores the last max value to avoid duplicate alerts
 
   @override
   void initState() {
@@ -384,6 +420,17 @@ class _GraphicScreenState extends State<GraphicScreen> {
         if (emgGraphData.length > 30) {
           emgGraphData.removeAt(0);
         }
+
+        // valor máximo
+        double maxValue = findMaxValue(emgGraphData);
+
+        // encontraar el máximo
+        if (lastMaxValue == null || maxValue > lastMaxValue!) {
+          lastMaxValue = maxValue; // updatea
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showMaxValueDialog(context, maxValue);
+          });
+        }
       });
     });
   }
@@ -396,6 +443,13 @@ class _GraphicScreenState extends State<GraphicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Find the maximum value
+    double maxValue = findMaxValue(emgGraphData);
+
+    // Show the dialog after the frame has been rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showMaxValueDialog(context, maxValue);
+    });
     return Scaffold(
         appBar: AppBar(
           foregroundColor: lilyPurple,
