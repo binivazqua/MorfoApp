@@ -403,37 +403,39 @@ class _GraphicScreenState extends State<GraphicScreen> {
   List<FlSpot> emgGraphData = [];
   int counter = 0;
   StreamSubscription<int>? emgSubscription;
-  double? lastMaxValue; // Stores the last max value to avoid duplicate alerts
+  double?
+      lastMaxValue; // guarda el último valor máximo para evitar alerts múltiples
 
-  Timer? readingTimer; // ✅ Controls the 10-second reading session
-  bool isReadingActive = false; // ✅ Prevents duplicate readings
+  Timer? readingTimer; // controla 10 secs
+  bool isReadingActive = false; // bool que previene multiple alerts
 
   @override
   void initState() {
     super.initState();
 
-    isReadingActive = true; // ✅ Activate reading session
+    isReadingActive = true; // empieza a recibir
 
     // Start 10-second timer
     readingTimer = Timer(Duration(seconds: 10), () {
+      // ya dejó de contar??
       if (mounted) {
-        isReadingActive = false; // ✅ Stop recording
-        emgSubscription?.cancel(); // ✅ Stop BLE readings
+        isReadingActive = false; // deja de recibi -> bool
+        emgSubscription?.cancel(); //
 
-        double maxValue = findMaxValue(emgGraphData); // ✅ Find max value
+        double maxValue = findMaxValue(emgGraphData); // encontrar valor máximo
 
-        // ✅ Show alert after 10 seconds
+        // show alert
         showMaxValueDialog(context, maxValue);
       }
     });
 
-    // ✅ Listen to EMG stream during the reading session
+    // escuchar stream mientras tanto
     emgSubscription = widget.emgStream.listen((emgValue) {
-      if (!mounted || !isReadingActive)
-        return; // ✅ Stop updating if session ends
+      if (!mounted || !isReadingActive) return; // si la sesión acaba
 
       setState(() {
-        emgGraphData.add(FlSpot(counter.toDouble(), emgValue.toDouble()));
+        emgGraphData.add(FlSpot(
+            counter.toDouble(), emgValue.toDouble())); // añadir datos a graph
         counter++;
 
         if (emgGraphData.length > 30) {
@@ -445,8 +447,8 @@ class _GraphicScreenState extends State<GraphicScreen> {
 
   @override
   void dispose() {
-    emgSubscription?.cancel(); // ✅ Stop listening to BLE
-    readingTimer?.cancel(); // ✅ Cancel the reading timer
+    emgSubscription?.cancel(); // dejar de stremear
+    readingTimer?.cancel(); // dejar de contar
     super.dispose();
   }
 
@@ -496,6 +498,18 @@ class _GraphicScreenState extends State<GraphicScreen> {
                     backgroundColor: Colors.black)),
               ),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ReporteEMG()));
+              },
+              child: Text(
+                'Ir a mi reporte',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
+            )
           ],
         ));
   }
