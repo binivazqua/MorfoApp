@@ -127,7 +127,24 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                         isCurved: true,
                         color: darkPeriwinkle,
                         barWidth: 3,
-                        dotData: FlDotData(show: true)),
+                        dotData: FlDotData(
+                            show: true,
+                            getDotPainter: (spot, percent, bar, index) {
+                              /* 
+                              spot -> punto a pintar
+                              percent -> porcentaje recorrido de la línea (no se usa)
+                              bar -> línea a la que pertenece el punto, (útil si tenemos varias líneas)}
+                              index -> posición del punto en la lista.
+                          */
+                              final isAboveThreshold = spot.y >= threshold;
+                              return FlDotCirclePainter(
+                                radius: 4,
+                                color: isAboveThreshold
+                                    ? Colors.deepPurple
+                                    : lilyPurple,
+                                strokeWidth: 0,
+                              );
+                            })),
                   ])),
             ),
             Text(
