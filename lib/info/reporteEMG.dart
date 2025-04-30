@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/info/emgClass.dart';
+import 'package:morflutter/my_emg/MyLiveChartScreen.dart';
 
 class ReporteEMG extends StatefulWidget {
   const ReporteEMG({super.key});
@@ -174,6 +175,17 @@ class _ReporteEMGState extends State<ReporteEMG> {
                   style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
                   child: Text('Real Time EMG',
+                      style: TextStyle(color: Colors.white))),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyLiveChartScreenState()));
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
+                  child: Text('Desktop EMG',
                       style: TextStyle(color: Colors.white)))
             ],
           ),
