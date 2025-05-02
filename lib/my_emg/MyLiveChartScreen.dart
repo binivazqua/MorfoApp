@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 
 class MyLiveChartScreenState extends StatefulWidget {
-  const MyLiveChartScreenState({super.key});
+  final min_value;
+  final max_value;
+  final target_value;
+  const MyLiveChartScreenState(
+      {super.key, this.min_value, this.max_value, this.target_value});
 
   @override
   State<MyLiveChartScreenState> createState() => _MyLiveChartScreenStateState();
@@ -119,6 +123,18 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                       maxY: 2,
                       titlesData: FlTitlesData(show: true),
                       borderData: FlBorderData(show: true),
+                      rangeAnnotations: RangeAnnotations(
+                        // Zona de esfuerzo ideal: cuando el valor EMG está entre 1.0 y 2.0V
+// Se representa como una banda verde horizontal semitransparente.
+// Ayuda al paciente a reconocer visualmente si su contracción fue eficaz.
+                        horizontalRangeAnnotations: [
+                          HorizontalRangeAnnotation(
+                            y1: 1.0,
+                            y2: 2.0,
+                            color: Colors.green.shade100,
+                          )
+                        ],
+                      ),
                       lineBarsData: [
                     //línea individual
                     LineChartBarData(

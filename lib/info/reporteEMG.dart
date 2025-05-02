@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/info/emgClass.dart';
+import 'package:morflutter/my_emg/MyCallibrationReading.dart';
 import 'package:morflutter/my_emg/MyLiveChartScreen.dart';
 
 class ReporteEMG extends StatefulWidget {
@@ -186,6 +187,17 @@ class _ReporteEMGState extends State<ReporteEMG> {
                   style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
                   child: Text('Desktop EMG',
+                      style: TextStyle(color: Colors.white))),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyCallibrationReading()));
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
+                  child: Text('Callibration',
                       style: TextStyle(color: Colors.white)))
             ],
           ),
