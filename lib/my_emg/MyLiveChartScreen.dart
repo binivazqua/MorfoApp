@@ -32,8 +32,10 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
   Color currentColor = Colors.green;
   final double margin = 0.2;
 
-  // conteo de contracciones ideales
+  // conteo de contracciones:
   int ideal_contractions = 0;
+  int lower_contractions = 0;
+  int higher_contractions = 0;
 
   @override
   void initState() {
@@ -62,7 +64,17 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
       // variables de texto para actualizar
       status = is_in_target_range ? 'Contracción' : 'Reposo';
       currentColor = is_in_target_range ? Colors.red : Colors.green;
+
+      /* MANEJO DE TIPO DE CONTRACCIONES */
+      // coantracciones ideales
       if (is_in_target_range) ideal_contractions++;
+
+      // contracciones bajas:
+      if (newValue < widget.target_value - margin) lower_contractions++;
+
+      // contracciones altas:
+      if (newValue > widget.target_value + margin) higher_contractions++;
+
       setState(() {
         emg_sim_data.add(FlSpot(x, newValue));
         x += 1;
@@ -129,6 +141,18 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                   fontSize: 20,
                   color: darkPeriwinkle,
                   fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Bajas: ${lower_contractions}'),
+                Text('Altas: ${higher_contractions}')
+              ],
             ),
             SizedBox(
               height: 10,
