@@ -22,31 +22,23 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
   Timer? timer;
 
   // Definir cronómetro de 10 segundos
-  int durationSeconds = 10;
+  int durationSeconds = 5;
   DateTime startTime = DateTime.now();
   bool isRunning = true;
 
   // Retroalimentación visual
-  double threshold = 0.8;
+  late double threshold;
   String status = 'Reposo';
   Color currentColor = Colors.green;
-
-  // 1. Definimos los puntos a graficar (x = tiempo, y = voltaje)
-  /*
-    final List<FlSpot> points = [
-      FlSpot(0, 0.5),
-      FlSpot(1, 0.7),
-      FlSpot(2, 1.3),
-      FlSpot(3, 0.6),
-      FlSpot(4, 0.4),
-      FlSpot(5, 1.8),
-      FlSpot(6, 0.9),
-    ];*/
+  final double margin = 0.2;
 
   @override
   void initState() {
     super.initState();
     startTime = DateTime.now();
+
+    // Inicializamos variables:
+    threshold = widget.min_value;
 
     timer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       if (!isRunning) return;
@@ -60,9 +52,13 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
       }
 
       final newValue = simulateEmgValue(); // reemplazar cuando BLE
+
+      // lógica para actualizar el estado:
+      final is_in_target_range = newValue >= widget.target_value - margin &&
+          newValue <= widget.target_value + margin;
       // variables de texto para actualizar
-      status = newValue > threshold ? 'Contracción' : 'Reposo';
-      currentColor = newValue > threshold ? Colors.red : Colors.green;
+      status = is_in_target_range ? 'Contracción' : 'Reposo';
+      currentColor = is_in_target_range ? Colors.red : Colors.green;
       setState(() {
         emg_sim_data.add(FlSpot(x, newValue));
         x += 1;
@@ -94,15 +90,22 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
-                title: Text('Sesión finalizada'),
-                content: Text(
-                  'Valor mínimo: ${minY.toStringAsFixed(2)} V\n'
-                  'Valor máximo: ${maxY.toStringAsFixed(2)} V',
+                actionsAlignment: MainAxisAlignment.center,
+                title: Text(
+                  'Sesión finalizada',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                content: Text(
+                    '¡Lo has hecho genial! Veamos tu reporte para continuar mejorando.'),
                 actions: [
                   TextButton(
+                      style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(lilyPurple)),
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cerrar'))
+                      child: Text(
+                        'Ver Reporte',
+                        style: TextStyle(color: Colors.black),
+                      ))
                 ]));
   }
 
@@ -129,8 +132,8 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
 // Ayuda al paciente a reconocer visualmente si su contracción fue eficaz.
                         horizontalRangeAnnotations: [
                           HorizontalRangeAnnotation(
-                            y1: 1.0,
-                            y2: 2.0,
+                            y1: widget.target_value - margin,
+                            y2: widget.target_value + margin,
                             color: Colors.green.shade100,
                           )
                         ],
@@ -152,7 +155,8 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                               bar -> línea a la que pertenece el punto, (útil si tenemos varias líneas)}
                               index -> posición del punto en la lista.
                           */
-                              final isAboveThreshold = spot.y >= threshold;
+                              final isAboveThreshold =
+                                  spot.y >= widget.min_value;
                               return FlDotCirclePainter(
                                 radius: 4,
                                 color: isAboveThreshold

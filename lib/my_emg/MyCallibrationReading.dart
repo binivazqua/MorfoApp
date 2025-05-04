@@ -32,7 +32,7 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
   double target_margin = 0.2; // margen del target para zona de rangeAnnotation
 
   // Definir cronómetro de 10 segundos
-  int durationSeconds = 10;
+  int durationSeconds = 5;
   DateTime startTime = DateTime.now();
 
   // Retroalimentación visual
@@ -95,27 +95,64 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
         : random.nextDouble() * 0.2 + 0.4;
   }
 
+  Widget _buildStatRow(IconData icon, String label, double value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, color: darkPeriwinkle),
+          const SizedBox(width: 10),
+          Text(
+            '$label ${value.toStringAsFixed(2)} V',
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
   void calculateStats() {
     if (emg_sim_data.isEmpty) return;
 
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
-                title: Text('Calibración completa'),
-                content: Text(
-                    'Contracción máxima: ${max_value.toStringAsFixed(2)} V\n'
-                    'Reposo mínimo: ${min_value.toStringAsFixed(2)} V\n'
-                    'Valor objetivo: ${target_value.toStringAsFixed(2)}'),
+                actionsAlignment: MainAxisAlignment.center,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                title: Text(
+                  '¡Calibración completada!',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildStatRow(
+                        Icons.arrow_downward, 'Reposo mínimo:', min_value),
+                    _buildStatRow(
+                        Icons.arrow_upward, 'Contracción máxima:', max_value),
+                    _buildStatRow(
+                        Icons.arrow_downward, 'Objetivo:', target_value),
+                  ],
+                ),
                 actions: [
                   TextButton(
+                      style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(lilyPurple)),
                       onPressed: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    MyLiveChartScreenState()));
+                                builder: (context) => MyLiveChartScreenState(
+                                      min_value: min_value,
+                                      max_value: max_value,
+                                      target_value: target_value,
+                                    )));
                       },
-                      child: Text('¡Comenzar!'))
+                      child: Text(
+                        '¡Comenzar!',
+                        style: TextStyle(color: Colors.black),
+                      ))
                 ]));
   }
 
@@ -125,37 +162,39 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
       appBar: AppBar(title: Text('Calibration Phase')),
       body: Padding(
         padding: EdgeInsets.all(8),
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: LineChart(
-                  // conjunto de líneas
-                  LineChartData(
-                      minY: 0,
-                      maxY: 2,
-                      titlesData: FlTitlesData(show: true),
-                      borderData: FlBorderData(show: true),
-                      rangeAnnotations: RangeAnnotations(
-                          // Zona de esfuerzo ideal: cuando el valor EMG está entre 1.0 y 2.0V
-// Se representa como una banda verde horizontal semitransparente.
-// Ayuda al paciente a reconocer visualmente si su contracción fue eficaz.
+        child: Center(
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: LineChart(
+                    // conjunto de líneas
+                    LineChartData(
+                        minY: 0,
+                        maxY: 2,
+                        titlesData: FlTitlesData(show: true),
+                        borderData: FlBorderData(show: true),
+                        rangeAnnotations: RangeAnnotations(
+                            // Zona de esfuerzo ideal: cuando el valor EMG está entre 1.0 y 2.0V
+                            // Se representa como una banda verde horizontal semitransparente.
+                            // Ayuda al paciente a reconocer visualmente si su contracción fue eficaz.
 
-                          ),
-                      lineBarsData: [
-                    //línea individual
-                    LineChartBarData(
-                        // puntos que conforman la línea
-                        spots: emg_sim_data,
-                        isCurved: true,
-                        color: darkPeriwinkle,
-                        barWidth: 3,
-                        dotData: FlDotData(
-                          show: true,
-                        )),
-                  ])),
-            ),
-          ],
+                            ),
+                        lineBarsData: [
+                      //línea individual
+                      LineChartBarData(
+                          // puntos que conforman la línea
+                          spots: emg_sim_data,
+                          isCurved: true,
+                          color: darkPeriwinkle,
+                          barWidth: 3,
+                          dotData: FlDotData(
+                            show: true,
+                          )),
+                    ])),
+              ),
+            ],
+          ),
         ),
       ),
     );
