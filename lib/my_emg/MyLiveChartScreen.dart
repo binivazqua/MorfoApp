@@ -32,6 +32,9 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
   Color currentColor = Colors.green;
   final double margin = 0.2;
 
+  // conteo de contracciones ideales
+  int ideal_contractions = 0;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +62,7 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
       // variables de texto para actualizar
       status = is_in_target_range ? 'Contracción' : 'Reposo';
       currentColor = is_in_target_range ? Colors.red : Colors.green;
+      if (is_in_target_range) ideal_contractions++;
       setState(() {
         emg_sim_data.add(FlSpot(x, newValue));
         x += 1;
@@ -116,7 +120,19 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              'Contracciones ideales: ${ideal_contractions}',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: darkPeriwinkle,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 10,
+            ),
             AspectRatio(
               aspectRatio: 1,
               child: LineChart(
@@ -155,11 +171,11 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                               bar -> línea a la que pertenece el punto, (útil si tenemos varias líneas)}
                               index -> posición del punto en la lista.
                           */
-                              final isAboveThreshold =
-                                  spot.y >= widget.min_value;
+                              final is_within_target_range =
+                                  spot.y >= widget.min_value + margin;
                               return FlDotCirclePainter(
                                 radius: 4,
-                                color: isAboveThreshold
+                                color: is_within_target_range
                                     ? Colors.deepPurple
                                     : lilyPurple,
                                 strokeWidth: 0,
