@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:morflutter/animations/starCelebration.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/my_emg/MyLiveChartScreen.dart';
 
@@ -40,6 +41,8 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
   String status = 'Reposo';
   Color currentColor = Colors.green;
 
+  double progress = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -65,11 +68,16 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
            y se activa el biofeedback positivo.
       */
 
+      // progreso:
+      setState(() {
+        progress = timeElapsed / durationSeconds;
+      });
       // Calibración completada
       if (timeElapsed >= durationSeconds && isCalibration) {
         setState(() => isCalibration = false);
         timer?.cancel();
         calculateStats();
+        //showSuccessDialog(context);
         return;
       }
 
@@ -78,6 +86,7 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
         emg_sim_data.add(FlSpot(x, newValue));
         x += 1;
         if (emg_sim_data.length > 100) emg_sim_data.removeAt(0);
+        // control del progreso de la sesión
       });
     });
   }
@@ -193,6 +202,19 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
                           )),
                     ])),
               ),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  color: darkPeriwinkle,
+                  backgroundColor: Colors.grey,
+                  minHeight: 30,
+                ),
+              ),
+              Text(
+                '${(progress * 100).toStringAsFixed(0)}% completado.',
+                style: TextStyle(fontSize: 20),
+              )
             ],
           ),
         ),
