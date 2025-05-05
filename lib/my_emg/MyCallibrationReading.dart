@@ -76,8 +76,12 @@ class _MyCallibrationReadingState extends State<MyCallibrationReading> {
       if (timeElapsed >= durationSeconds && isCalibration) {
         setState(() => isCalibration = false);
         timer?.cancel();
-        calculateStats();
-        //showSuccessDialog(context);
+        showSuccessAnimation(context);
+
+        Future.delayed(Duration(milliseconds: 2500), () {
+          calculateStats();
+        });
+
         return;
       }
 
