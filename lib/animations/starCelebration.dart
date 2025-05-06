@@ -46,18 +46,36 @@ void showSuccessAnimation(BuildContext context) {
       transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Center(
             child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(color: Colors.transparent),
+              width: 200,
+              height: 350,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(30))),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Lottie.asset('lib/design/renders/star_celebration.json'),
                   Text(
                     '¡Lo lograste!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: lilyPurple,
-                        fontSize: 15,
-                        backgroundColor: Colors.white),
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    textAlign: TextAlign.center,
+                    'Eres más fuerte de lo que crees...',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w200,
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
                   ),
                 ],
               ),
