@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:morflutter/animations/starCelebration.dart';
 import 'package:morflutter/design/constants.dart';
+import 'package:morflutter/my_emg/report/TimeStampReport.dart';
 
 class MyLiveChartScreenState extends StatefulWidget {
   final min_value;
@@ -37,6 +39,12 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
   int lower_contractions = 0;
   int higher_contractions = 0;
 
+  // conteo de tiempo de contracciones:
+  List<DateTime> idealTimestamps = [];
+  List<IdealContraction> idealContractions = [];
+  DateTime? currentContractionStart;
+  bool wasInTargetRange = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,29 +53,72 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
     // Inicializamos variables:
     threshold = widget.min_value;
 
+    // Iniciar el timer -> simulación de una lectura cada 100 ms.
     timer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       if (!isRunning) return;
 
+      // Loop logic -> are we done?
       final timeElapsed = DateTime.now().difference(startTime).inSeconds;
       if (timeElapsed >= durationSeconds) {
         setState(() => isRunning = false);
         timer?.cancel();
-        calculateStats(); // ← ve al paso 3
+
+        // una vez terminado, mostramos la animación
+        showSuccessAnimation(context);
+
+        // esperamos un momento y mostramos el reporte
+        Future.delayed(Duration(milliseconds: 2500), () {
+          calculateStats();
+        });
         return;
       }
 
+      // Simuación del valor EMG
       final newValue = simulateEmgValue(); // reemplazar cuando BLE
 
       // lógica para actualizar el estado:
       final is_in_target_range = newValue >= widget.target_value - margin &&
           newValue <= widget.target_value + margin;
       // variables de texto para actualizar
-      status = is_in_target_range ? 'Contracción' : 'Reposo';
+      status = is_in_target_range ? 'En Rango' : 'Fuera de Rango';
       currentColor = is_in_target_range ? Colors.red : Colors.green;
 
       /* MANEJO DE TIPO DE CONTRACCIONES */
       // coantracciones ideales
       if (is_in_target_range) ideal_contractions++;
+
+      /* Control de temporalidad 
+      
+        - is_in_target_range: valor actual está en rango ideal (?)
+        - wasInTargetRange: valor pasado estuvo en rango ideal (?)
+        - currentContractionStart: DateTime exacto en el que empezó la contracción ideal.
+        - idealContractions: Lista que guarda cada contracción ideal como 
+          una instancia de la clase IdealContraction, que contiene el tiempo 
+          de inicio y duración.
+      
+      */
+
+      // inicio de una contracción ideal (venimos del reposo)
+      if (is_in_target_range && !wasInTargetRange) {
+        currentContractionStart = DateTime.now();
+      }
+      // cambio de estado -> ya no en rango, pero sí estuvimos y su timestamp se almacenó.
+      if (!is_in_target_range &&
+          wasInTargetRange &&
+          currentContractionStart != null) {
+        // obtenemos su duración
+        final duration = DateTime.now().difference(currentContractionStart!);
+        idealContractions.add(
+            // la alamacenamos
+            IdealContraction(
+                startTime: currentContractionStart!, duration: duration));
+
+        // actualizamos la varibale para permitir nuevas mediciones
+        currentContractionStart = null;
+      }
+
+      // actuzalizar estado:
+      wasInTargetRange = is_in_target_range;
 
       // contracciones bajas:
       if (newValue < widget.target_value - margin) lower_contractions++;
@@ -117,7 +168,12 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                   TextButton(
                       style: ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(lilyPurple)),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TimeStampReport(
+                                    contractions: idealContractions,
+                                  ))),
                       child: Text(
                         'Ver Reporte',
                         style: TextStyle(color: Colors.black),

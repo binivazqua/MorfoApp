@@ -46,7 +46,7 @@ void showSuccessAnimation(BuildContext context) {
       transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (_, __, ___) => Center(
             child: Container(
-              width: 200,
+              width: 300,
               height: 350,
               decoration: BoxDecoration(
                   color: Colors.white,
@@ -73,6 +73,7 @@ void showSuccessAnimation(BuildContext context) {
                     'Eres más fuerte de lo que crees...',
                     style: TextStyle(
                       fontWeight: FontWeight.w200,
+                      decoration: TextDecoration.none,
                       color: Colors.black,
                       fontSize: 15,
                     ),
