@@ -14,6 +14,8 @@ class TimeStampReport extends StatelessWidget {
         child: ListView.builder(
           itemCount: contractions.length,
           itemBuilder: (context, index) {
+            //Se toma el objeto IdealContraction
+            //correspondiente a ese index dentro de la lista.
             final contraction = contractions[index];
             return ListTile(
               leading: Icon(Icons.bolt, color: Colors.deepPurple),
