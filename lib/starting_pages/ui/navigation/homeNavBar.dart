@@ -5,6 +5,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/display_info/databaseLink.dart';
 import 'package:morflutter/info/reporteEMG.dart';
+import 'package:morflutter/starting_pages/ui/clinic_history/PatientHistoryScreen.dart';
 import 'package:morflutter/starting_pages/ui/intro_screens/intro_page1.dart';
 import 'package:morflutter/starting_pages/ui/profile/UserProfilePage.dart';
 import 'package:morflutter/starting_pages/ui/sbk101/about_sbk101.dart';
@@ -28,7 +29,7 @@ class _MorfoHomeNavBarState extends State<MorfoHomeNavBar> {
 
   // pages list
   final List<Widget> tabs = [
-    AboutSbk101(),
+    PatientHistoryScreen(),
     MySbk101(),
     ReporteEMG(),
     UserProfilePage()
