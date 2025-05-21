@@ -107,7 +107,8 @@ class _ReporteEMGState extends State<ReporteEMG> {
                     
                     */
                     if (!snapshot.hasData ||
-                        snapshot.data?.snapshot.value == null) {
+                        (snapshot.data! as DatabaseEvent).snapshot.value ==
+                            null) {
                       return Center(
                         child: Text('No hay datos para mostrar.'),
                       );
@@ -115,7 +116,8 @@ class _ReporteEMGState extends State<ReporteEMG> {
 
                     // Convertir la info en un Map<>
                     final Map<dynamic, dynamic> rawData =
-                        snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
+                        (snapshot.data! as DatabaseEvent).snapshot.value
+                            as Map<dynamic, dynamic>;
 
                     List<EMGData> lecturas = [];
 

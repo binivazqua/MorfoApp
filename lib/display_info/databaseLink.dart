@@ -184,10 +184,13 @@ class _databaseReadTestState extends State<databaseReadTest> {
                 StreamBuilder(
                   stream: database.child(path).onValue,
                   builder: (context, snapshot) {
-                    if (snapshot.hasData &&
-                        snapshot.data!.snapshot.value != null) {
+                    if (!snapshot.hasData ||
+                        (snapshot.data! as DatabaseEvent).snapshot.value ==
+                            null) {
                       final data = Map<String, dynamic>.from(
-                          snapshot.data!.snapshot.value as Map);
+                          (snapshot.data! as DatabaseEvent).snapshot.value
+                              as Map);
+
                       List<MorfoData> sensorDataList = [];
 
                       // Parsing the data from the database

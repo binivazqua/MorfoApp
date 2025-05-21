@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/core_patch.dart' show Uri;
+
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -122,9 +124,7 @@ class _AboutPageState extends State<AboutPage> {
                                 WidgetStatePropertyAll(darkPeriwinkle),
                             maximumSize: WidgetStatePropertyAll(Size(170, 50))),
                         onPressed: () => setState(() {
-                              _launched = _launchInBrowser(Uri(
-                                  path:
-                                      'https://pub.dev/packages/url_launcher/example'));
+                              _launched = _launchInBrowser(Uri());
                             }),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
