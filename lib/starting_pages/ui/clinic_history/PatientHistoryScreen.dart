@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
+import 'package:intl/intl.dart';
 
 class PatientHistoryScreen extends StatefulWidget {
   const PatientHistoryScreen({super.key});
@@ -13,6 +14,50 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
   final name_controller = TextEditingController();
   final age_controller = TextEditingController();
   final diagnosis_controller = TextEditingController();
+
+  DateTime selected_date = DateTime.now();
+
+  /* ++++++++++++++++++++++ TEXT FIELD WIDGET +++++++++++++++++++++++ */
+  Widget LabeledTextField(
+    String label, {
+    required TextEditingController controller,
+    TextInputType inputType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: inputType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Ingresa $label'.toLowerCase();
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  /*+++++++++++++++++++++++ DATE PICKER +++++++++++++++++++++++++++ */
+  Future<void> DatePicker(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        firstDate: DateTime(1990),
+        initialDate: selected_date,
+        lastDate: DateTime.now(),
+        locale: Locale('es'));
+
+    if (picked != null && picked != selected_date) {
+      setState(() {
+        selected_date = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,38 +83,30 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                TextFormField(
-                  controller: name_controller,
-                  decoration: InputDecoration(labelText: 'Nombre Completo'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa un nombre';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: age_controller,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Edad'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa una edad';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: diagnosis_controller,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Diagnóstico'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa un diagnóstico';
-                    }
-                    return null;
-                  },
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    LabeledTextField('Nombre Completo',
+                        controller: name_controller),
+                    LabeledTextField('Edad', controller: age_controller),
+                    LabeledTextField('Diagnóstico',
+                        controller: diagnosis_controller),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                            'Fecha de diagnóstico: ${DateFormat.yMd().format(selected_date)}'),
+                        Spacer(),
+                        TextButton(
+                            onPressed: () => DatePicker(context),
+                            child: Text('Cambiar'))
+                      ],
+                    )
+                  ],
                 ),
                 SizedBox(
                   height: 16,

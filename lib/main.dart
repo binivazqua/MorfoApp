@@ -12,6 +12,7 @@ import 'package:morflutter/starting_pages/ui/navigation/homeNavBar.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 /*
 void main() async {
@@ -38,7 +39,6 @@ void main() async {
 
 class MainApp extends StatelessWidget {
   final Future<FirebaseApp> myApp = Firebase.initializeApp();
-  
 
   MainApp({super.key});
 
@@ -49,6 +49,15 @@ class MainApp extends StatelessWidget {
 
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Lausane400'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('es'), // Español
+        Locale('en'), // Inglés
+      ],
       home: FutureBuilder(
           future: myApp,
           builder: (context, snapshot) {
