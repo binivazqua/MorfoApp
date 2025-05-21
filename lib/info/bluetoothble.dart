@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:async' as async;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -145,10 +145,11 @@ class _BLEScreenState extends State<BLEScreen> {
             await espCharacteristic!.setNotifyValue(true);
 
             // Real time stream updateess
-            StreamController<int> emgController = StreamController<int>();
+            late async.StreamController<int> emgController =
+                async.StreamController<int>();
 
             // ✅ Listen for BLE data
-            StreamSubscription<List<int>> bleSubscription =
+            late async.StreamSubscription<List<int>> bleSubscription =
                 espCharacteristic!.lastValueStream.listen((value) {
               int emgValue = _convertToInt(value);
 
@@ -402,11 +403,11 @@ void showMaxValueDialog(BuildContext context, double maxValue) {
 class _GraphicScreenState extends State<GraphicScreen> {
   List<FlSpot> emgGraphData = [];
   int counter = 0;
-  StreamSubscription<int>? emgSubscription;
+  late async.StreamSubscription<int>? emgSubscription;
   double?
       lastMaxValue; // guarda el último valor máximo para evitar alerts múltiples
 
-  Timer? readingTimer; // controla 10 secs
+  async.Timer? readingTimer; // controla 10 secs
   bool isReadingActive = false; // bool que previene multiple alerts
 
   @override
@@ -416,7 +417,7 @@ class _GraphicScreenState extends State<GraphicScreen> {
     isReadingActive = true; // empieza a recibir
 
     // Start 10-second timer
-    readingTimer = Timer(Duration(seconds: 10), () {
+    readingTimer = async.Timer(Duration(seconds: 10), () {
       // ya dejó de contar??
       if (mounted) {
         isReadingActive = false; // deja de recibi -> bool
