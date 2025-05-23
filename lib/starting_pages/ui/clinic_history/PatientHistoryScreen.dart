@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:morflutter/models/PatientProfile.dart';
 
 class PatientHistoryScreen extends StatefulWidget {
   const PatientHistoryScreen({super.key});
@@ -15,6 +17,7 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
   final age_controller = TextEditingController();
   final diagnosis_controller = TextEditingController();
   final notes_controller = TextEditingController();
+  double pain_value = 1.0;
   final List<String> symptoms_options = [
     'Dolor',
     'Fatiga',
@@ -54,6 +57,7 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
   /* +++++++++++++++++++++ GENDER SELECTOR +++++++++++++++++++++++++++ */
   Widget genderSelector() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Género:',
@@ -159,6 +163,23 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
     }
   }
 
+  /* +++++++++++++++++++++++++++++++ SLIDER DE DOLOR +++++++++++++++++++++++++ */
+  Widget painLevel() {
+    return (Slider(
+        value: pain_value,
+        min: 0,
+        max: 5,
+        divisions: 5,
+        label: pain_value.toString(),
+        onChanged: (value) {
+          setState(() {
+            pain_value = value;
+          });
+        }));
+  }
+
+  /* ++++++++++++++++++++++++++++++ SEND INFO FUNC +++++++++++++++++++++++++++++ */
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,82 +194,89 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Form(
-            key: _formKey,
-            child: Expanded(
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                children: [
-                  Text(
-                    'Historial Clínico',
-                    style: TextStyle(
+          key: _formKey,
+          child: Expanded(
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              children: [
+                Text(
+                  'Historial Clínico',
+                  style: TextStyle(
                       fontSize: 20,
                       color: darkPeriwinkle,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    LabeledTextField('Nombre Completo',
+                        controller: name_controller),
+                    LabeledTextField('Edad', controller: age_controller),
+                    SizedBox(
+                      height: 5,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      LabeledTextField('Nombre Completo',
-                          controller: name_controller),
-                      LabeledTextField('Edad', controller: age_controller),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      genderSelector(),
-                      LabeledTextField('Diagnóstico',
-                          controller: diagnosis_controller),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                              'Fecha de diagnóstico: ${DateFormat.yMd().format(selected_date)}'),
-                          Spacer(),
-                          TextButton(
-                              onPressed: () => DatePicker(context),
-                              child: Text('Cambiar'))
-                        ],
-                      ),
-                      Text(
-                        'Síntomas:',
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      symptomsChips(),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        'Notas adicionales:',
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      notesSpace()
-                    ],
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          print('Nombre: ${name_controller.text}');
-                          print('Edad: ${age_controller.text}');
-                          print('Goal: ${diagnosis_controller.text}');
-                        }
-                      },
-                      child: Text('Guardar'))
-                ],
-              ),
-            )),
+                    genderSelector(),
+                    LabeledTextField('Diagnóstico',
+                        controller: diagnosis_controller),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                            'Fecha de diagnóstico: ${DateFormat.yMd().format(selected_date)}'),
+                        Spacer(),
+                        TextButton(
+                            onPressed: () => DatePicker(context),
+                            child: Text('Cambiar'))
+                      ],
+                    ),
+                    Text(
+                      'Síntomas:',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    symptomsChips(),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Nivel de dolor:',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    painLevel(),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Notas adicionales:',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    notesSpace()
+                  ],
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        /* final profile = PatientProfile(id: FirebaseAuth.instance.currentUser!.uid, name: name_controller.text, age: int.tryParse(age_controller.text) ?? 0, gender: selected_gender ?? '', diagnosisDate: selected_date, diagnosis: diagnosis_controller.text, goal: goal, symptoms: symptoms, painLevel: painLevel, notes: notes)*/
+                      }
+                    },
+                    child: Text('Guardar'))
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
