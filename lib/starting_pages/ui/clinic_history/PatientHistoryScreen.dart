@@ -14,8 +14,17 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
   final name_controller = TextEditingController();
   final age_controller = TextEditingController();
   final diagnosis_controller = TextEditingController();
+  final notes_controller = TextEditingController();
+  final List<String> symptoms_options = [
+    'Dolor',
+    'Fatiga',
+    'Hormigueo',
+    'Rigidez'
+  ];
 
+  final List<String> selected_symptoms = [];
   DateTime selected_date = DateTime.now();
+  String? selected_gender;
 
   /* ++++++++++++++++++++++ TEXT FIELD WIDGET +++++++++++++++++++++++ */
   Widget LabeledTextField(
@@ -40,6 +49,98 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
         },
       ),
     );
+  }
+
+  /* +++++++++++++++++++++ GENDER SELECTOR +++++++++++++++++++++++++++ */
+  Widget genderSelector() {
+    return Column(
+      children: [
+        Text(
+          'Género:',
+          style: TextStyle(fontSize: 15),
+        ),
+        RadioListTile(
+            value: "Femenino",
+            title: Text(
+              "Femenino",
+              style: TextStyle(fontSize: 12),
+            ),
+            groupValue: selected_gender,
+            onChanged: (value) {
+              setState(() {
+                selected_gender = value;
+              });
+            }),
+        RadioListTile(
+            value: "Masculino",
+            title: Text(
+              'Masculino',
+              style: TextStyle(fontSize: 12),
+            ),
+            groupValue: selected_gender,
+            onChanged: (value) {
+              setState(() {
+                selected_gender = value;
+              });
+            }),
+        RadioListTile(
+            value: "No binario",
+            title: Text(
+              'No binario',
+              style: TextStyle(fontSize: 12),
+            ),
+            groupValue: selected_gender,
+            onChanged: (value) {
+              setState(() {
+                selected_gender = value;
+              });
+            }),
+        RadioListTile(
+            value: "Prefiero no decirlo",
+            title: Text(
+              'Prefiero no decirlo',
+              style: TextStyle(fontSize: 12),
+            ),
+            groupValue: selected_gender,
+            onChanged: (value) {
+              setState(() {
+                selected_gender = value;
+              });
+            })
+      ],
+    );
+  }
+
+  /* ++++++++++++++++++++++ SYMPTOMS ++++++++++++++++++++++ */
+  Widget symptomsChips() {
+    return Wrap(
+      spacing: 8,
+      children: symptoms_options.map((symptom) {
+        final isSelected =
+            selected_symptoms.contains(symptom); // loop style check
+        return (FilterChip(
+            selectedColor: lilyPurple,
+            label: Text(symptom),
+            selected: isSelected,
+            onSelected: (selected) {
+              setState(() {
+                isSelected
+                    ? selected_symptoms.remove(symptom) // ya está seleccionado
+                    : selected_symptoms.add(symptom); // por seleccionar
+              });
+            }));
+      }).toList(),
+    );
+  }
+
+  /* ++++++++++++++++++++++ NOTES FIELD +++++++++++++++++++++++++++ */
+  Widget notesSpace() {
+    return (TextFormField(
+      controller: notes_controller,
+      maxLines: 5,
+      decoration: InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+    ));
   }
 
   /*+++++++++++++++++++++++ DATE PICKER +++++++++++++++++++++++++++ */
@@ -73,54 +174,80 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
         padding: EdgeInsets.all(20),
         child: Form(
             key: _formKey,
-            child: ListView(
-              children: [
-                Text(
-                  'Historial Clínico',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: darkPeriwinkle,
+            child: Expanded(
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                children: [
+                  Text(
+                    'Historial Clínico',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: darkPeriwinkle,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LabeledTextField('Nombre Completo',
-                        controller: name_controller),
-                    LabeledTextField('Edad', controller: age_controller),
-                    LabeledTextField('Diagnóstico',
-                        controller: diagnosis_controller),
-                    Row(
-                      children: [
-                        Icon(Icons.calendar_today),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                            'Fecha de diagnóstico: ${DateFormat.yMd().format(selected_date)}'),
-                        Spacer(),
-                        TextButton(
-                            onPressed: () => DatePicker(context),
-                            child: Text('Cambiar'))
-                      ],
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        print('Nombre: ${name_controller.text}');
-                        print('Edad: ${age_controller.text}');
-                        print('Goal: ${diagnosis_controller.text}');
-                      }
-                    },
-                    child: Text('Guardar'))
-              ],
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      LabeledTextField('Nombre Completo',
+                          controller: name_controller),
+                      LabeledTextField('Edad', controller: age_controller),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      genderSelector(),
+                      LabeledTextField('Diagnóstico',
+                          controller: diagnosis_controller),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                              'Fecha de diagnóstico: ${DateFormat.yMd().format(selected_date)}'),
+                          Spacer(),
+                          TextButton(
+                              onPressed: () => DatePicker(context),
+                              child: Text('Cambiar'))
+                        ],
+                      ),
+                      Text(
+                        'Síntomas:',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      symptomsChips(),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Notas adicionales:',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      notesSpace()
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          print('Nombre: ${name_controller.text}');
+                          print('Edad: ${age_controller.text}');
+                          print('Goal: ${diagnosis_controller.text}');
+                        }
+                      },
+                      child: Text('Guardar'))
+                ],
+              ),
             )),
       ),
     );
