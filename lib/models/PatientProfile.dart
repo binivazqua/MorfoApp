@@ -5,7 +5,7 @@ class PatientProfile {
   final String gender; // género del paciente
   final DateTime diagnosisDate; // fecha de diagnóstico
   final String diagnosis; // tipo de diagnóstico
-  final String
+  final List<String>
       goal; // objetivo del tratamiento: adapatación, preparación, etc...
   final List<String> symptoms; // síntomas? inflamación, irritación,
   final double painLevel; // Escala del 0 a 10

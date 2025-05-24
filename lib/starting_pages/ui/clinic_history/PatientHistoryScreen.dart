@@ -26,7 +26,16 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
     'Rigidez'
   ];
 
+  final List<String> goals_options = [
+    'Adaptación al dispositivo',
+    'Aumentar resistencia al esfuerzo',
+    'Gestión emocional durante el uso',
+    'Superar un reto clínico'
+  ];
+
   final List<String> selected_symptoms = [];
+  final List<String> selected_goals = [];
+
   DateTime selected_date = DateTime.now();
   String? selected_gender;
 
@@ -116,7 +125,7 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
     );
   }
 
-  /* ++++++++++++++++++++++ SYMPTOMS ++++++++++++++++++++++ */
+  /* +++++++++++++++++++++++ GOAL SELECTOR ++++++++++++++++++++++ */
   Widget symptomsChips() {
     return Wrap(
       spacing: 8,
@@ -132,6 +141,27 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
                 isSelected
                     ? selected_symptoms.remove(symptom) // ya está seleccionado
                     : selected_symptoms.add(symptom); // por seleccionar
+              });
+            }));
+      }).toList(),
+    );
+  }
+
+  /* ++++++++++++++++++++++ SYMPTOMS ++++++++++++++++++++++ */
+  Widget goalsChips() {
+    return Wrap(
+      spacing: 8,
+      children: goals_options.map((goal) {
+        final isSelected = selected_goals.contains(goal); // loop style check
+        return (FilterChip(
+            selectedColor: lilyPurple,
+            label: Text(goal),
+            selected: isSelected,
+            onSelected: (selected) {
+              setState(() {
+                isSelected
+                    ? selected_goals.remove(goal) // ya está seleccionado
+                    : selected_goals.add(goal); // por seleccionar
               });
             }));
       }).toList(),
@@ -192,7 +222,7 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
           gender: selected_gender!,
           diagnosisDate: selected_date,
           diagnosis: diagnosis_controller.text.trim(),
-          goal: '',
+          goal: selected_goals,
           symptoms: selected_symptoms,
           painLevel: pain_value,
           notes: notes_controller.text.trim());
@@ -211,6 +241,7 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error guardando historial: ${e}")),
       );
+      print("${e}");
     }
   }
 
@@ -284,6 +315,14 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
                       style: TextStyle(fontSize: 15),
                     ),
                     painLevel(),
+                    Text(
+                      'Metas iniciales:',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    goalsChips(),
                     SizedBox(
                       height: 5,
                     ),
