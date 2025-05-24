@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
@@ -179,6 +180,39 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
   }
 
   /* ++++++++++++++++++++++++++++++ SEND INFO FUNC +++++++++++++++++++++++++++++ */
+  Future<void> submitPatientProfile() async {
+    PatientProfile? profile;
+    // si mandamos a validar el forms
+    if (_formKey.currentState!.validate()) {
+      // Instancia del modelo
+      profile = PatientProfile(
+          id: FirebaseAuth.instance.currentUser!.uid,
+          name: name_controller.text.trim(),
+          age: int.parse(age_controller.text.trim()),
+          gender: selected_gender!,
+          diagnosisDate: selected_date,
+          diagnosis: diagnosis_controller.text.trim(),
+          goal: '',
+          symptoms: selected_symptoms,
+          painLevel: pain_value,
+          notes: notes_controller.text.trim());
+    }
+
+    // intentamos mandar el perfil
+    try {
+      await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(profile!.id)
+          .set(profile.toJSON());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Historial guardado correctamente")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error guardando historial: ${e}")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,9 +302,7 @@ class _PatientHistoryScreenState extends State<PatientHistoryScreen> {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        /* final profile = PatientProfile(id: FirebaseAuth.instance.currentUser!.uid, name: name_controller.text, age: int.tryParse(age_controller.text) ?? 0, gender: selected_gender ?? '', diagnosisDate: selected_date, diagnosis: diagnosis_controller.text, goal: goal, symptoms: symptoms, painLevel: painLevel, notes: notes)*/
-                      }
+                      submitPatientProfile();
                     },
                     child: Text('Guardar'))
               ],
