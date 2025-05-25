@@ -51,7 +51,7 @@ class PatientProfile {
       gender: json['gender'],
       diagnosisDate: DateTime.parse(json['diagnosisDate']),
       diagnosis: json['diagnosis'],
-      goal: json['goal'],
+      goal: List<String>.from(json['goal']),
       symptoms: List<String>.from(json['symptoms']),
       painLevel: json['painLevel'],
       notes: json['notes'],
