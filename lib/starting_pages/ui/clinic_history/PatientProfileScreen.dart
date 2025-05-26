@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:morflutter/components/patientInfoTile.dart';
+import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/models/PatientProfile.dart';
 
 class PatientProfileScreen extends StatefulWidget {
@@ -46,22 +48,57 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : ListView(
-                children: [
-                  Text("👤 ${profile!.name}",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  Text("🎂 Edad: ${profile!.age}"),
-                  Text("⚧️ Género: ${profile!.gender}"),
-                  Text(
-                      "📆 Fecha diagnóstico: ${profile!.diagnosisDate.toLocal().toString().split(' ')[0]}"),
-                  Text("📄 Diagnóstico: ${profile!.diagnosis}"),
-                  Text("🎯 Objetivos: ${profile!.goal.join(', ')}"),
-                  Text("💬 Síntomas: ${profile!.symptoms.join(', ')}"),
-                  Text("😖 Nivel de dolor: ${profile!.painLevel}/5"),
-                  SizedBox(height: 8),
-                  Text("📝 Notas: ${profile!.notes}"),
-                ],
+            : Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Center(
+                  child: Column(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100)),
+                            color: lilyPurple),
+                        padding: EdgeInsets.all(10),
+                        child: Icon(
+                          Icons.person_2,
+                          color: draculaPurple,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        profile!.name,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      PatientInfoTile(
+                          value: profile!.age.toString(), parameter: 'Edad:'),
+                      PatientInfoTile(
+                          value: profile!.gender, parameter: 'Género:'),
+                      PatientInfoTile(
+                          value: profile!.diagnosis, parameter: 'Diagnóstico:'),
+                      PatientInfoTile(
+                          value: profile!.diagnosisDate
+                              .toLocal()
+                              .toString()
+                              .split(' ')[0],
+                          parameter: 'Fecha de diagnóstico:'),
+                      PatientInfoTile(
+                          value: profile!.painLevel.toString(),
+                          parameter: 'Nivel de dolor:'),
+                      PatientInfoTile(
+                          value: profile!.symptoms.join('\n'),
+                          parameter: 'Síntomas: \n'),
+                      PatientInfoTile(
+                          value: profile!.goal.join('\n'),
+                          parameter: 'Objetivos: \n'),
+                      PatientInfoTile(
+                          value: profile!.notes, parameter: 'Notas: \n'),
+                    ],
+                  ),
+                ),
               ));
   }
 }
