@@ -9,12 +9,23 @@ class PatientInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: 350,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            border: Border.all(color: lilyPurple)),
-        padding: EdgeInsets.all(10),
-        child: Text('${parameter} ${value}'));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(parameter,
+            style:
+                TextStyle(fontWeight: FontWeight.bold, color: darkPeriwinkle)),
+        SizedBox(
+          height: 5,
+        ),
+        Container(
+            width: 350,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                border: Border.all(color: lilyPurple)),
+            padding: EdgeInsets.all(10),
+            child: Text(value)),
+      ],
+    );
   }
 }
