@@ -110,10 +110,15 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
                               child: ChoiceChip(
                                 label: Text(speciality),
                                 selected: isSelected,
+                                // el callback de un ChoiceChip que se ejecuta cuando el usuario toca ese chip.
                                 onSelected: (_) {
+                                  // este setState() asigna nuestra lista base de doctores que se mostrarán en la UI.
                                   setState(() {
-                                    _selectedFilter = speciality;
+                                    _selectedFilter = speciality; // chip activo
                                     _filteredDoctors = doctors.where((doctor) {
+                                      // filtro similar al de SearchBar, conserva los docs que:
+                                      // Coinciden con lo que escribió el usuario (matchesSearch)
+                                      // Coinciden con el chip seleccionado (matchesFilter)
                                       final matchesSearch = doctor.name
                                               .toLowerCase()
                                               .contains(_searchController.text
