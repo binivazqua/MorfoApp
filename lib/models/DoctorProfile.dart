@@ -6,6 +6,7 @@ class DoctorProfile {
   final String location;
   final String hospital;
   final String photoUrl;
+  final String profileUrl;
 
   DoctorProfile(
       {required this.id,
@@ -14,7 +15,8 @@ class DoctorProfile {
       required this.description,
       required this.location,
       required this.hospital,
-      required this.photoUrl});
+      required this.photoUrl,
+      required this.profileUrl});
 
   // Convertir a JSON (por si se quisiera subir)
   Map<String, dynamic> toJSON() => {
@@ -24,7 +26,8 @@ class DoctorProfile {
         'description': description,
         'location': location,
         'hospital': hospital,
-        'pfpUrl': photoUrl
+        'pfpUrl': photoUrl,
+        'profileUrl': profileUrl
       };
 
   // Crear desde JSON (al recibir de Firestore)
@@ -35,5 +38,6 @@ class DoctorProfile {
       description: json['description'],
       location: json['location'],
       hospital: json['hospital'],
-      photoUrl: json['photoUrl']);
+      photoUrl: json['photoUrl'],
+      profileUrl: json['profileUrl']);
 }
