@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/models/DoctorProfile.dart';
 import 'package:morflutter/services/DoctorService.dart';
+import 'package:morflutter/starting_pages/ui/specialista/SpecialistProfilePage.dart';
 
 class MedDirectoryScreen extends StatefulWidget {
   const MedDirectoryScreen({super.key});
@@ -263,7 +264,13 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
                                   ),
                                   // Empuja el botón al fondo
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SpecialistProfilePage()));
+                                    },
                                     child: const Text(
                                       'Ver',
                                       style: TextStyle(color: Colors.black),

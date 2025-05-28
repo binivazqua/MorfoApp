@@ -14,4 +14,13 @@ class PatientService {
         .doc(uid)
         .set(profile.toJSON());
   }
+
+  /*+++++++++++++++++ LOAD PROFILE +++++++++++++++++++++ */
+  static Future<PatientProfile> loadProfile(String uid) async {
+    // encontrar colección en firestore
+    final doc =
+        await FirebaseFirestore.instance.collection('patients').doc(uid).get();
+
+    return PatientProfile.fromJson(doc.data()!);
+  }
 }
