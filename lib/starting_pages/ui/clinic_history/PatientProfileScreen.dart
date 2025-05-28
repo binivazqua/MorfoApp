@@ -57,9 +57,6 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                             color: draculaPurple,
                           ),
                         ),
-                        SizedBox(
-                          height: 5,
-                        ),
                         Text(
                           profile!.name,
                           style: TextStyle(fontSize: 20),

@@ -11,4 +11,17 @@ class DoctorService {
       return DoctorProfile.fromJson({...data, 'id': doc.id});
     }).toList();
   }
+
+  /*+++++++++++++++++ LOAD PROFILE +++++++++++++++++++++ */
+  static Future<DoctorProfile> loadProfile(String uid) async {
+    // encontrar colección en firestore
+    final doc =
+        await FirebaseFirestore.instance.collection('doctors').doc(uid).get();
+
+    // SOLUCIÓN CHOLA
+    final data = doc.data();
+    if (data == null) throw Exception("No se encontró al especialista.");
+
+    return DoctorProfile.fromJson({...data, 'id': doc.id});
+  }
 }

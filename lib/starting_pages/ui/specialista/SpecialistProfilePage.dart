@@ -1,30 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:morflutter/models/DoctorProfile.dart';
+import 'package:morflutter/services/DoctorService.dart';
 
-class SpecialistProfilePage extends StatefulWidget {
-  const SpecialistProfilePage({super.key});
+class SpecialistProfilePage extends StatelessWidget {
+  final String doctorId;
+  const SpecialistProfilePage({super.key, required this.doctorId});
 
-  @override
-  State<SpecialistProfilePage> createState() => _SpecialistProfilePageState();
-}
-
-class _SpecialistProfilePageState extends State<SpecialistProfilePage> {
-  DoctorProfile? profile;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Nombre del Especialista'),
-      ),
-      body: Column(
-        children: [
-          Container(
-            child: Column(
-              children: [CircleAvatar()],
-            ),
-          )
-        ],
-      ),
-    );
+    return FutureBuilder<DoctorProfile>(
+        future: DoctorService.loadProfile(doctorId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text("No se encontró información"));
+          }
+
+          final profile = snapshot.data!;
+          return Scaffold();
+        });
   }
 }
