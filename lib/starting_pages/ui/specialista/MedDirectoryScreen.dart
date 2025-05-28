@@ -15,6 +15,7 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
   TextEditingController _searchController = TextEditingController();
 
   List<DoctorProfile> _filteredDoctors = [];
+  String _selectedFilter = 'Todos';
   @override
   void initState() {
     // TODO: implement initState
@@ -55,6 +56,14 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
               _filteredDoctors = doctors;
             }
 
+            // creamos lista de filtros}
+            // Crea una lista que comience con 'Todos', y luego añade una vez cada especialidad distinta que haya en la lista doctors
+            // ...{} -> set en list
+            final specialities = [
+              'Todos',
+              ...{for (final d in doctors) d.speciality}
+            ];
+
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -85,6 +94,60 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
                           prefixIcon: Icon(Icons.search),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12))),
+                    ),
+
+                    // Filter Chips
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          children: specialities.map((speciality) {
+                            final isSelected = _selectedFilter == speciality;
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: ChoiceChip(
+                                label: Text(speciality),
+                                selected: isSelected,
+                                onSelected: (_) {
+                                  setState(() {
+                                    _selectedFilter = speciality;
+                                    _filteredDoctors = doctors.where((doctor) {
+                                      final matchesSearch = doctor.name
+                                              .toLowerCase()
+                                              .contains(_searchController.text
+                                                  .toLowerCase()) ||
+                                          doctor.speciality
+                                              .toLowerCase()
+                                              .contains(_searchController.text
+                                                  .toLowerCase()) ||
+                                          doctor.location
+                                              .toLowerCase()
+                                              .contains(_searchController.text
+                                                  .toLowerCase());
+
+                                      final matchesFilter =
+                                          speciality == 'Todos'
+                                              ? true
+                                              : doctor.speciality == speciality;
+
+                                      return matchesSearch && matchesFilter;
+                                    }).toList();
+                                  });
+                                },
+                                selectedColor: Colors.deepPurple.shade100,
+                                backgroundColor: Colors.grey.shade200,
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? Colors.deepPurple
+                                      : Colors.black87,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
