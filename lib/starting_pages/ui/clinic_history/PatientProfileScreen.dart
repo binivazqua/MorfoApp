@@ -49,6 +49,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                 child: CircularProgressIndicator(),
               )
             : SingleChildScrollView(
+                scrollDirection: Axis.vertical,
                 child: Center(
                   child: Column(
                     spacing: 10,
@@ -96,6 +97,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                           parameter: 'Objetivos:'),
                       PatientInfoTile(
                           value: profile!.notes, parameter: 'Notas:'),
+                      ElevatedButton(onPressed: () {}, child: Text('Editar'))
                     ],
                   ),
                 ),
