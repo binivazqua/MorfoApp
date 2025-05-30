@@ -270,8 +270,7 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   SpecialistProfilePage(
-                                                    doctorId: doctor.hospital,
-                                                  )));
+                                                      doctorId: doctor.id)));
                                     },
                                     child: const Text(
                                       'Ver',
