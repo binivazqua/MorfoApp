@@ -271,6 +271,8 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
                                               builder: (context) =>
                                                   SpecialistProfilePage(
                                                       doctorId: doctor.id)));
+                                      print(
+                                          'Navigating to doctor with ID: ${doctor.id}');
                                     },
                                     child: const Text(
                                       'Ver',

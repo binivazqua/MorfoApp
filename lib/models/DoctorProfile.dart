@@ -1,5 +1,5 @@
 class DoctorProfile {
-  final String id;
+  String id;
   final String name;
   final String speciality;
   final String description;
@@ -32,12 +32,12 @@ class DoctorProfile {
 
   // Crear desde JSON (al recibir de Firestore)
   factory DoctorProfile.fromJson(Map<String, dynamic> json) => DoctorProfile(
-      id: json['id'],
-      name: json['name'],
-      speciality: json['speciality'],
-      description: json['description'],
-      location: json['location'],
-      hospital: json['hospital'],
-      photoUrl: json['photoUrl'],
-      profileUrl: json['profileUrl']);
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      speciality: json['speciality'] ?? '',
+      description: json['description'] ?? '',
+      location: json['location'] ?? '',
+      hospital: json['hospital'] ?? '',
+      photoUrl: json['photoUrl'] ?? '',
+      profileUrl: json['profileUrl'] ?? '');
 }
