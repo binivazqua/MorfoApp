@@ -8,15 +8,16 @@ class DoctorProfile {
   final String photoUrl;
   final String profileUrl;
 
-  DoctorProfile(
-      {required this.id,
-      required this.name,
-      required this.speciality,
-      required this.description,
-      required this.location,
-      required this.hospital,
-      required this.photoUrl,
-      required this.profileUrl});
+  DoctorProfile({
+    required this.id,
+    required this.name,
+    required this.speciality,
+    required this.description,
+    required this.location,
+    required this.hospital,
+    required this.photoUrl,
+    required this.profileUrl,
+  });
 
   // Convertir a JSON (por si se quisiera subir)
   Map<String, dynamic> toJSON() => {

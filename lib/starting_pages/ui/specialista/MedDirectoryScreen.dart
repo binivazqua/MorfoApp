@@ -195,8 +195,9 @@ class _MedDirectoryScreenState extends State<MedDirectoryScreen> {
                                 children: [
                                   const SizedBox(height: 8),
                                   CircleAvatar(
-                                    backgroundImage:
-                                        NetworkImage(doctor.photoUrl),
+                                    backgroundImage: NetworkImage(doctor
+                                            .photoUrl ??
+                                        'https://i.pinimg.com/736x/cb/81/27/cb8127cba8860d645bbe0cfb07ef0759.jpg'),
                                     radius: 30,
                                   ),
                                   const SizedBox(height: 10),
