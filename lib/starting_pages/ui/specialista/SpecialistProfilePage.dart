@@ -6,6 +6,7 @@ import 'package:morflutter/models/DoctorProfile.dart';
 import 'package:morflutter/models/PatientProfile.dart';
 import 'package:morflutter/services/DoctorService.dart';
 import 'package:morflutter/services/PatientService.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SpecialistProfilePage extends StatefulWidget {
   final String doctorId;
@@ -24,6 +25,15 @@ class _SpecialistProfilePageState extends State<SpecialistProfilePage> {
     super.initState();
     _profileFuture = DoctorService.loadProfile(doctorId);
     print('Received doctorId: ${doctorId}');
+  }
+
+  /************************* URL LAUNCHER FUNC +++++++++++++++++++++*/
+  Future<void> _launchDoctoraliaProfile(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('No se pudo abrir el perfil: ${url}');
+    }
   }
 
   @override
@@ -124,11 +134,23 @@ class _SpecialistProfilePageState extends State<SpecialistProfilePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Descripción',
-                                style: TextStyle(
-                                    fontSize: 18, color: darkPeriwinkle),
-                                textAlign: TextAlign.start,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Descripción',
+                                    style: TextStyle(
+                                        fontSize: 18, color: darkPeriwinkle),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        _launchDoctoraliaProfile(
+                                            profile.profileUrl);
+                                      },
+                                      child: Text('Visitar perfil'))
+                                ],
                               ),
                               SizedBox(
                                 height: 10,
