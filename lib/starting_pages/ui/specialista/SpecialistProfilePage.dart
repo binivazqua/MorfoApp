@@ -151,29 +151,99 @@ class _SpecialistProfilePageState extends State<SpecialistProfilePage> {
                                 height: 10,
                               ),
                               Container(
-                                height: 100,
-                                decoration: BoxDecoration(
-                                    color: Colors.purple[50],
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  spacing: 10,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 5),
-                                      child: CircleAvatar(
-                                        radius: 20,
-                                        child: Icon(Icons.person_2_rounded),
-                                      ),
+                                height: 300,
+                                child: ListView(children: [
+                                  Container(
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                        color: Colors.purple[50],
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      spacing: 10,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 5),
+                                          child: CircleAvatar(
+                                            radius: 20,
+                                            child: Icon(Icons.person_2_rounded),
+                                          ),
+                                        ),
+                                        patientCard(
+                                            'Abigail Santiago',
+                                            'Excelente terapeuta, con muy buen trato y calidez a los pacientes',
+                                            '27/05/2025'),
+                                      ],
                                     ),
-                                    patientCard(
-                                        'Abigail Santiago',
-                                        'Excelente terapeuta, con muy buen trato y calidez a los pacientes',
-                                        '27/05/2025')
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                        color: Colors.purple[50],
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      spacing: 10,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 5),
+                                          child: CircleAvatar(
+                                            radius: 20,
+                                            child: Icon(Icons.person_2_rounded),
+                                          ),
+                                        ),
+                                        patientCard(
+                                            'Valeria Caballero',
+                                            'Terapias altamente recomendadas, la atención y profesionalismo con el que cuenta es excepcional',
+                                            '3/02/2025'),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                        color: Colors.purple[50],
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      spacing: 10,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 5),
+                                          child: CircleAvatar(
+                                            radius: 20,
+                                            child: Icon(Icons.person_2_rounded),
+                                          ),
+                                        ),
+                                        patientCard(
+                                            'Alejandro Sánchez',
+                                            'Muy atento y profesional. Nos brindó una explicación detallada del procedimiento que llevaría a cabo.',
+                                            '13/10/2024'),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
                               )
                             ],
                           ),
