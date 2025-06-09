@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/animations/starCelebration.dart';
 import 'package:morflutter/design/constants.dart';
+import 'package:morflutter/models/DataPoint.dart';
 import 'package:morflutter/my_emg/report/TimeStampReport.dart';
 
 class MyLiveChartScreenState extends StatefulWidget {
@@ -45,6 +48,9 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
   DateTime? currentContractionStart;
   bool wasInTargetRange = false;
 
+  // Lista de contracciones a Firestore:
+  List<Datapoint> sessionData = [];
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +88,15 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
       // variables de texto para actualizar
       status = is_in_target_range ? 'En Rango' : 'Fuera de Rango';
       currentColor = is_in_target_range ? Colors.red : Colors.green;
+
+      // Asignación de estatus por intensidad del valor EMG
+      Datapoint point = Datapoint(
+          value: newValue,
+          date: DateTime.now(),
+          intensity: status,
+          muscleGroup: 'brachialis');
+
+      sessionData.add(point);
 
       /* MANEJO DE TIPO DE CONTRACCIONES */
       // coantracciones ideales
@@ -168,17 +183,63 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
                   TextButton(
                       style: ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(lilyPurple)),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TimeStampReport(
-                                    contractions: idealContractions,
-                                  ))),
+                      onPressed: () {
+                        uploadDataToFirestore();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TimeStampReport(
+                                      contractions: idealContractions,
+                                    )));
+                      },
                       child: Text(
                         'Ver Reporte',
                         style: TextStyle(color: Colors.black),
                       ))
                 ]));
+  }
+
+  // Method to upload data to Firestore
+  Future<void> uploadDataToFirestore() async {
+    // detect user ID
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final sessionId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    if (userId == null) {
+      print('User not logged in');
+      return;
+    }
+
+    // Prepare data for Firestore
+    try {
+      for (var datapoint in sessionData) {
+        await FirebaseFirestore.instance
+            .collection('emg_sessions')
+            .doc(userId)
+            .collection('sessions')
+            .doc(sessionId)
+            .collection('data')
+            .add(datapoint.toJSON());
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Data uploaded successfully!'),
+            duration: Duration(seconds: 2)),
+      );
+      print('Data uploaded successfully to Firestore.');
+    } catch (e) {
+      print('Error uploading data to Firestore: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error uploading data: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    sessionData.clear();
   }
 
   @override
