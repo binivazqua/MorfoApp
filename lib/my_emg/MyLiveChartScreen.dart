@@ -216,7 +216,7 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
       final datapoints_json = sessionData.map((dp) => dp.toJSON()).toList();
       await FirebaseFirestore.instance
           .collection('emg_sessions')
-          .doc(sessionId)
+          .doc(userId)
           .set({
         'user_id': userId,
         'session_id': sessionId,

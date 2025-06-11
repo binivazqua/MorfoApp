@@ -332,7 +332,7 @@ class _BLEScreenState extends State<BLEScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              RealtimeReading()));
+                                              ReadingsHomepage()));
                                 },
                                 child: Text(
                                   "Gráficos",
@@ -502,8 +502,10 @@ class _GraphicScreenState extends State<GraphicScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => RealtimeReading()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ReadingsHomepage()));
               },
               child: Text(
                 'Ir a mi reporte',

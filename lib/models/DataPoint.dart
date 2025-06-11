@@ -23,7 +23,7 @@ class Datapoint {
   factory Datapoint.fromJson(Map<String, dynamic> json) => Datapoint(
         value: json['value']?.toDouble() ?? 0.0,
         date: DateTime.parse(json['date'] ?? DateTime.now().toIso8601String()),
-        intensity: json['intensity'] ?? 'uknown',
+        intensity: json['intensity'] ?? 'unknown',
         muscleGroup: json['muscleGroup'] ?? '',
       );
 }
