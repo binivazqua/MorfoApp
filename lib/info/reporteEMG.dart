@@ -6,125 +6,79 @@ import 'package:morflutter/info/emgClass.dart';
 import 'package:morflutter/my_emg/MyCallibrationReading.dart';
 import 'package:morflutter/my_emg/MyLiveChartScreen.dart';
 
-class ReporteEMG extends StatefulWidget {
-  const ReporteEMG({super.key});
+class RealtimeReading extends StatefulWidget {
+  const RealtimeReading({super.key});
 
   @override
-  State<ReporteEMG> createState() => _ReporteEMGState();
+  State<RealtimeReading> createState() => _RealtimeReadingState();
 }
 
-class _ReporteEMGState extends State<ReporteEMG> {
-  // DB DATA:
-  final MorfoDatabase = FirebaseDatabase.instance.ref();
-
-  // CURRENT USER DATA
-  User? currentUser = FirebaseAuth.instance.currentUser;
-
-  // DATA
-  List<EMGData> EMGDataList = [];
-
+class _RealtimeReadingState extends State<RealtimeReading> {
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchEMGData();
-  }
-
-  void fetchEMGData() {
-    String? userUID = currentUser?.uid;
-    if (userUID == null) return; // ya accedió ?
-
-    String path = 'EMGData/$userUID/';
-    print('Recolectando datos EMG desde: $path');
-
-    // Activate listeners:
-    MorfoDatabase.child(path).onValue.listen((event) {
-      if (event.snapshot.value != null) {
-        // recibir los datos en crudo:
-        final Map<dynamic, dynamic> rawData =
-            event.snapshot.value as Map<dynamic, dynamic>;
-
-        // creamos cajita de almacenamiento:
-        List<EMGData> lecturas = [];
-
-        // hacer uso de nuestro transformer:
-        rawData.forEach((key, value) {
-          // Volvemos a corroborar que sea map<dynamic, dynamic> tomando en cuenta que nuestro usuario tenga sólo una lectura -> crashearía.
-          if (value is Map<dynamic, dynamic>) {
-            // appendear haciendo uso del transformerm teniendo como key la timestamp y valor al sub-map.
-            lecturas
-                .add(EMGData.fromMap(key, Map<String, dynamic>.from(value)));
-          }
-        });
-
-        // ordenar
-        /*
-          print(5.compareTo(10)); // Output: -1 (5 is smaller, so it should come before 10)
-          print(10.compareTo(5)); // Output: 1  (10 is larger, so it should come after 5)
-          print(5.compareTo(5));  // Output: 0  (Both are equal)
-
-        */
-        lecturas.sort((a, b) => b.timestamp.compareTo(
-            a.timestamp)); // compareTo() determina el orden de sorteo de sort()
-
-        // Updatear
-        setState(() {
-          EMGDataList = lecturas;
-          print(EMGDataList.toString());
-        });
-      } else {
-        print('No hay datos EMG para este usuario');
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    String? userUID = currentUser?.uid;
-
-    String path = 'EMGData/$userUID/';
-
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+        body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  'Historial de lecturas',
+                  'Lectura en Tiempo Real',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () {},
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
-                  child: Text('Real Time EMG',
-                      style: TextStyle(color: Colors.white))),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyLiveChartScreenState()));
-                  },
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
-                  child: Text('Desktop EMG',
-                      style: TextStyle(color: Colors.white))),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyCallibrationReading()));
-                  },
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(darkPeriwinkle)),
-                  child: Text('Callibration',
-                      style: TextStyle(color: Colors.white)))
+              IntrinsicWidth(
+                stepWidth: 300,
+                child: IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {},
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(darkPeriwinkle)),
+                          child: Text('Real Time EMG',
+                              style: TextStyle(color: Colors.white))),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MyLiveChartScreenState()));
+                          },
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(darkPeriwinkle)),
+                          child: const Text('Desktop EMG',
+                              style: TextStyle(color: Colors.white))),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MyCallibrationReading()));
+                          },
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(darkPeriwinkle)),
+                          child: const Text('Callibration',
+                              style: TextStyle(color: Colors.white)))
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         ),

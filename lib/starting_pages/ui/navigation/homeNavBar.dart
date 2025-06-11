@@ -34,7 +34,7 @@ class _MorfoHomeNavBarState extends State<MorfoHomeNavBar> {
   final List<Widget> tabs = [
     PatientHistoryScreen(),
     MedDirectoryScreen(),
-    ReporteEMG(),
+    RealtimeReading(),
     PatientProfileScreen()
   ];
 
