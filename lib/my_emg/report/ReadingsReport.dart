@@ -16,9 +16,15 @@ class _ReadingsReportState extends State<ReadingsReport> {
   FirebaseAuth user = FirebaseAuth.instance;
 
   bool isloading = false;
-  List<Map<String, dynamic>> readings = [];
+  List<EmgSession> history_readings = [];
 
-  Future<List<EmgSession>> fetchReadings() async {
+  @override
+  void initState() {
+    super.initState();
+    fetchReadings();
+  }
+
+  Future<void> fetchReadings() async {
     setState(() {
       isloading = true;
     });
@@ -39,13 +45,16 @@ class _ReadingsReportState extends State<ReadingsReport> {
       final data = snapshot.data();
       final List<dynamic> readingsData = data?['datapoints'] ?? [];
 
-      return readingsData
+      final List<EmgSession> readings = readingsData
           .map(
               (reading) => EmgSession.fromJson(reading as Map<String, dynamic>))
           .toList();
+
+      setState(() {
+        history_readings = readings;
+      });
     } catch (e) {
       print('Error fetching readings: $e');
-      return [];
     } finally {
       setState(() {
         isloading = false;
@@ -56,13 +65,25 @@ class _ReadingsReportState extends State<ReadingsReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text('Readings Report')],
-        ),
-      ),
-    );
+        appBar: AppBar(),
+        body: isloading
+            ? CircularProgressIndicator()
+            : history_readings.isEmpty
+                ? Text('No hay historial para este usuario')
+                : ListView.builder(
+                    itemBuilder: (context, index) {
+                      final dp = history_readings[index];
+                      return ListTile(
+                        title: Text('Session ID: ${dp.sessionId}'),
+                        subtitle: Text(
+                            'Start Time: ${dp.startTime}\nDuration: ${dp.durationSeconds} seconds\nIdeal Contractions: ${dp.idealContractions}\nMin Value: ${dp.minValue}\nMax Value: ${dp.maxValue}\nTarget Value: ${dp.targetValue}'),
+                        trailing: Icon(Icons.arrow_forward),
+                        onTap: () {
+                          // Navigate to session details or another screen if needed
+                        },
+                      );
+                    },
+                    itemCount: history_readings.length,
+                  ));
   }
 }
