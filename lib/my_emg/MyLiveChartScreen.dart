@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/animations/starCelebration.dart';
@@ -212,15 +213,23 @@ class _MyLiveChartScreenStateState extends State<MyLiveChartScreenState> {
 
     // Prepare data for Firestore
     try {
-      for (var datapoint in sessionData) {
-        await FirebaseFirestore.instance
-            .collection('emg_sessions')
-            .doc(userId)
-            .collection('sessions')
-            .doc(sessionId)
-            .collection('data')
-            .add(datapoint.toJSON());
-      }
+      final datapoints_json = sessionData.map((dp) => dp.toJSON()).toList();
+      await FirebaseFirestore.instance
+          .collection('emg_sessions')
+          .doc(sessionId)
+          .set({
+        'user_id': userId,
+        'session_id': sessionId,
+        'start_time': startTime.toIso8601String(),
+        'duration_seconds': durationSeconds,
+        'ideal_contractions': ideal_contractions,
+        'lower_contractions': lower_contractions,
+        'higher_contractions': higher_contractions,
+        'min_value': double.parse(widget.min_value.toStringAsFixed(2)),
+        'max_value': double.parse(widget.max_value.toStringAsFixed(2)),
+        'target_value': double.parse(widget.target_value.toStringAsFixed(2)),
+        'datapoints': datapoints_json, // List of EMG data points
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
