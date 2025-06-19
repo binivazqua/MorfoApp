@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
+import 'package:morflutter/info/bluetoothble.dart';
 import 'package:morflutter/info/emgClass.dart';
 import 'package:morflutter/my_emg/MyCallibrationReading.dart';
 import 'package:morflutter/my_emg/MyLiveChartScreen.dart';
@@ -83,6 +84,18 @@ class _ReadingsHomepageState extends State<ReadingsHomepage> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         const ReadingsReport()));
+                          },
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(darkPeriwinkle)),
+                          child: const Text('Reports',
+                              style: TextStyle(color: Colors.white))),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BLEScreen()));
                           },
                           style: ButtonStyle(
                               backgroundColor:

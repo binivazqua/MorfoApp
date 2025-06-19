@@ -35,20 +35,26 @@ class _ReadingsReportState extends State<ReadingsReport> {
         throw Exception('User not logged in');
       }
 
-      final snapshot =
-          await firestore.collection('emg_sessions').doc(userId).get();
+      final snapshot = await firestore
+          .collection('patients')
+          .doc(userId)
+          .collection('emg_sessions')
+          .orderBy('start_time', descending: true) // Ordenar por fecha
+          .get();
 
-      if (!snapshot.exists) {
+      // Query snapshot en lugar de snapshot ordinario
+      if (snapshot.docs.isEmpty) {
         throw Exception('No readings found for this user');
       }
 
-      final data = snapshot.data();
-      final List<dynamic> readingsData = data?['datapoints'] ?? [];
-
-      final List<EmgSession> readings = readingsData
-          .map(
-              (reading) => EmgSession.fromJson(reading as Map<String, dynamic>))
-          .toList();
+      // Convertir las data pieces en objetos EmgSession
+      final List<EmgSession> readings = snapshot.docs.map((doc) {
+        final data = doc.data();
+        // extraer el array de datapoints
+        final datapoints = data['datapoints'] as List<dynamic>? ?? [];
+        // spread operador para combinar los datos del documento con los datapoints
+        return EmgSession.fromJson({...data, 'datapoints': datapoints});
+      }).toList();
 
       setState(() {
         history_readings = readings;

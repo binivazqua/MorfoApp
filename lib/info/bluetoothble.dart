@@ -99,8 +99,8 @@ class _BLEScreenState extends State<BLEScreen> {
       setState(() {
         scanResults = results
             .where((result) =>
-                (result.device.advName.contains('ESP')) ||
-                (result.device.advName.contains('Orion')))
+                (result.device.advName.contains('XIAO')) ||
+                (result.device.advName.contains('EMG')))
             .toList();
       });
     });

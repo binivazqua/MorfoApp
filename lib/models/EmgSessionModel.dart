@@ -30,32 +30,32 @@ class EmgSession {
   // Create a Map function that converts the object to a JSON structure
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
-      'sessionId': sessionId,
-      'startTime': startTime,
-      'durationSeconds': durationSeconds,
-      'idealContractions': idealContractions,
-      'lowerContractions': lowerContractions,
-      'higherContractions': higherContractions,
-      'minValue': minValue,
-      'maxValue': maxValue,
-      'targetValue': targetValue,
+      'user_id': userId,
+      'session_id': sessionId,
+      'start_time': startTime,
+      'duration_seconds': durationSeconds,
+      'ideal_contractions': idealContractions,
+      'lower_contractions': lowerContractions,
+      'higher_contractions': higherContractions,
+      'min_value': minValue,
+      'max_value': maxValue,
+      'target_value': targetValue,
       'datapoints': datapoints.map((dp) => dp.toJSON()).toList(),
     };
   }
 
   factory EmgSession.fromJson(Map<String, dynamic> json) {
     return EmgSession(
-      userId: json['userId'],
-      sessionId: json['sessionId'],
-      startTime: json['startTime'],
-      durationSeconds: json['durationSeconds'],
-      idealContractions: json['idealContractions'],
-      lowerContractions: json['lowerContractions'],
-      higherContractions: json['higherContractions'],
-      minValue: json['minValue'].toDouble(),
-      maxValue: json['maxValue'].toDouble(),
-      targetValue: json['targetValue'].toDouble(),
+      userId: json['user_id'],
+      sessionId: json['session_id'],
+      startTime: json['start_time'],
+      durationSeconds: json['duration_seconds'],
+      idealContractions: json['ideal_contractions'],
+      lowerContractions: json['lower_contractions'],
+      higherContractions: json['higher_contractions'],
+      minValue: json['min_value'].toDouble(),
+      maxValue: json['max_value'].toDouble(),
+      targetValue: json['target_value'].toDouble(),
       datapoints: (json['datapoints'] as List)
           .map((dp) => Datapoint.fromJson(dp))
           .toList(),
