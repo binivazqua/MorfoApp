@@ -13,12 +13,12 @@ import 'dart:io';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/info/reporteEMG.dart'; // Needed for platform-specific checks
 
-class BLEScreen extends StatefulWidget {
+class TestBLEScreen extends StatefulWidget {
   @override
-  _BLEScreenState createState() => _BLEScreenState();
+  _TestBLEScreenState createState() => _TestBLEScreenState();
 }
 
-class _BLEScreenState extends State<BLEScreen> {
+class _TestBLEScreenState extends State<TestBLEScreen> {
   // FIREBASE:
   final MorfoDatabase = FirebaseDatabase.instance.ref('EMGData');
   User? newUser = FirebaseAuth.instance.currentUser;
@@ -556,6 +556,7 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
     super.initState();
     // Escucha el stream y actualiza (lastJsonString) cada vez que recibe un nuevo dato
     jsonSubscription = widget.jsonStream.listen((jsonString) {
+      if (!mounted) return;
       setState(() {
         lastJsonString = jsonString;
         try {

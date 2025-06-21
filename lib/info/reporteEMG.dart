@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:morflutter/design/constants.dart';
 import 'package:morflutter/info/bluetoothble.dart';
+import 'package:morflutter/info/bluetoothble_rasp.dart';
 import 'package:morflutter/info/emgClass.dart';
 import 'package:morflutter/my_emg/MyCallibrationReading.dart';
 import 'package:morflutter/my_emg/MyLiveChartScreen.dart';
@@ -95,7 +96,7 @@ class _ReadingsHomepageState extends State<ReadingsHomepage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => BLEScreen()));
+                                    builder: (context) => TestBLEScreen()));
                           },
                           style: ButtonStyle(
                               backgroundColor:
