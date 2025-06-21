@@ -1,4 +1,5 @@
 import 'dart:async' as async;
+import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -145,33 +146,44 @@ class _BLEScreenState extends State<BLEScreen> {
             await espCharacteristic!.setNotifyValue(true);
 
             // Real time stream updateess
-            late async.StreamController<int> emgController =
-                async.StreamController<int>();
+            late async.StreamController<String> jsonController =
+                async.StreamController<String>();
 
-            // ✅ Listen for BLE data
+            // listen for ble data -> chunks of bytes, (that's why List<int>)
             late async.StreamSubscription<List<int>> bleSubscription =
                 espCharacteristic!.lastValueStream.listen((value) {
-              int emgValue = _convertToInt(value);
+              if (value.isNotEmpty) {
+                String jsonString = utf8.decode(value);
+                Map<String, dynamic> jsonData = json.decode(jsonString);
 
-              setState(() {
-                receivedData = emgValue;
-                sendEMGData();
+                // Acceder a los datos individuales:
+                int average = jsonData['avg_data'];
+                double maxValue = jsonData['max_value'];
+                double minValue = jsonData['min_value'];
+                int adcValue = jsonData['adc_value'];
+                String state = jsonData['state'];
+
+                print(
+                    "Datos recibidos: avg_data: $average, max_value: $maxValue, min_value: $minValue, adc_value: $adcValue, state: $state");
+
+            
+                // El stream sigue vivo mientras se envían datos??
+                if (!jsonController.isClosed) {
+                  jsonController.add(jsonString);
+                }
+                
+              }
               });
 
-              // ✅ Send data to the graph
-              if (!emgController.isClosed) {
-                emgController.add(emgValue);
-              }
-            });
-
             // ir a página de graph
+            
             Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            GraphicScreen(emgStream: emgController.stream)))
-                .then((_) {
-              emgController.close();
+                            jsonReadingsPage(jsonStream: jsonController.stream)))
+                .then((_) { 
+              jsonController.close();
               bleSubscription.cancel();
             });
           }
@@ -471,7 +483,7 @@ class _GraphicScreenState extends State<GraphicScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Text(
-                'Datos EMG',
+                'Datos Recibidos',
                 style: TextStyle(fontSize: 25),
               ),
             ),
@@ -516,5 +528,74 @@ class _GraphicScreenState extends State<GraphicScreen> {
             )
           ],
         ));
+  }
+}
+
+class jsonReadingsPage extends StatefulWidget {
+  final async.Stream<String> jsonStream; // stream de datos json
+  const jsonReadingsPage({super.key, required this.jsonStream});
+
+  @override
+  State<jsonReadingsPage> createState() => _jsonReadingsPageState();
+}
+
+class _jsonReadingsPageState extends State<jsonReadingsPage> {
+
+  late async.StreamSubscription<String> jsonSubscription; // escucha el stream de datos json
+  // Variables para almacenar los datos
+  String? lastJsonString;
+  double? average;
+  double? min;
+  double? max;
+  int? adc;
+  String? state;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Escucha el stream y actualiza (lastJsonString) cada vez que recibe un nuevo dato
+    jsonSubscription = widget.jsonStream.listen((jsonString) {
+      setState(() {
+        lastJsonString = jsonString;
+        try {
+          final Map<String, dynamic> jsonData = json.decode(jsonString);
+          average = (jsonData['avg_value'] as num?)?.toDouble();
+          min = (jsonData['min_value'] as num?)?.toDouble();
+          max = (jsonData['max_value'] as num?)?.toDouble();
+          adc = jsonData['adc_value'] as int?;
+          state = jsonData['state'] as String?;
+
+        } catch (e) {
+          // Manejo de errores en caso de que el JSON no sea válido
+          print('Error al decodificar JSON: $e');
+          average = null;
+          min = null;
+          max = null;
+          adc = null;
+          state = null;
+        }
+      });
+
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    jsonSubscription.cancel();
+    super.dispose();
+  }
+ 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        foregroundColor: lilyPurple,
+        backgroundColor: draculaPurple,
+        title: Image(
+            width: 120,
+            image: AssetImage(
+                'lib/design/logos/principal_morado'))), body: Column(children: [Text(lastJsonString!= null ? 'Datos:' : 'Esperando Datos'), Text('Average: ${average}'), Text('Min: ${min}'), Text('Max: ${max}'), Text('ADC: ${adc}'), Text('State: ${state}')],),);
   }
 }
