@@ -68,7 +68,7 @@ void loop()
       const char *dataToSend = received.c_str();
       Serial.print("Dato a enviar por BLE: ");
       Serial.println(dataToSend);
-      pCharacteristic->setValue(received.c_str());
+      pCharacteristic->setValue("lolazo");
       pCharacteristic->notify();
     }
 

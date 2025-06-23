@@ -66,34 +66,13 @@ class _TestBLEScreenState extends State<TestBLEScreen> {
             espCharacteristic = characteristic;
             await espCharacteristic!.setNotifyValue(true);
 
-            // StreamController for JSON strings
-            late async.StreamController<String> jsonController =
-                async.StreamController<String>();
-
-            // Listen for BLE data as JSON string
-            late async.StreamSubscription<List<int>> bleSubscription =
-                espCharacteristic!.lastValueStream.listen((value) {
-              print('Raw value received: $value');
-              try {
-                String jsonString = utf8.decode(value);
-                print('Decoded JSON String: $jsonString');
-                if (!jsonController.isClosed) {
-                  jsonController.add(jsonString);
-                }
-              } catch (e) {
-                print('Error decoding value: $e');
-              }
-            });
-
             // Navigate to jsonReadingsPage
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => jsonReadingsPage(
-                        jsonStream: jsonController.stream))).then((_) {
-              jsonController.close();
-              bleSubscription.cancel();
-            });
+                          characteristic: characteristic,
+                        ))).then((_) {});
           }
         }
       }
@@ -139,15 +118,19 @@ class _TestBLEScreenState extends State<TestBLEScreen> {
 }
 
 class jsonReadingsPage extends StatefulWidget {
-  final async.Stream<String> jsonStream;
-  const jsonReadingsPage({super.key, required this.jsonStream});
+  final BluetoothCharacteristic characteristic;
+
+  const jsonReadingsPage({
+    super.key,
+    required this.characteristic,
+  });
 
   @override
   State<jsonReadingsPage> createState() => _jsonReadingsPageState();
 }
 
 class _jsonReadingsPageState extends State<jsonReadingsPage> {
-  late async.StreamSubscription<String> jsonSubscription;
+  late async.StreamSubscription<List<int>> bleSubscription;
   String? lastJsonString;
   double? average;
   double? min;
@@ -158,33 +141,29 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
   @override
   void initState() {
     super.initState();
-    jsonSubscription = widget.jsonStream.listen((jsonString) {
-      print("Raw JSON String: $jsonString");
-      if (!mounted) return;
-      setState(() {
-        lastJsonString = jsonString;
-        try {
-          final Map<String, dynamic> jsonData = json.decode(jsonString);
-          average = (jsonData['avg_value'] as num?)?.toDouble();
-          min = (jsonData['min_value'] as num?)?.toDouble();
-          max = (jsonData['max_value'] as num?)?.toDouble();
-          adc = jsonData['adc_value'] as int?;
-          state = jsonData['state'] as String?;
-        } catch (e) {
-          print('Error al decodificar JSON: $e');
-          average = null;
-          min = null;
-          max = null;
-          adc = null;
-          state = null;
-        }
-      });
+    bleSubscription = widget.characteristic.lastValueStream.listen((value) {
+      print('Raw value received: $value');
+      try {
+        String jsonString = utf8.decode(value);
+        print('Decoded JSON String: $jsonString');
+        setState(() {
+          lastJsonString = jsonString;
+          final data = json.decode(jsonString);
+          average = data['average']?.toDouble();
+          min = data['min']?.toDouble();
+          max = data['max']?.toDouble();
+          adc = data['adc'];
+          state = data['state'];
+        });
+      } catch (e) {
+        print('Error decoding value: $e');
+      }
     });
   }
 
   @override
   void dispose() {
-    jsonSubscription.cancel();
+    bleSubscription.cancel();
     super.dispose();
   }
 
