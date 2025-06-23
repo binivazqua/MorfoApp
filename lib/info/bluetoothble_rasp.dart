@@ -149,10 +149,10 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
         setState(() {
           lastJsonString = jsonString;
           final data = json.decode(jsonString);
-          average = data['average']?.toDouble();
-          min = data['min']?.toDouble();
-          max = data['max']?.toDouble();
-          adc = data['adc'];
+          average = data['avg_value']?.toDouble();
+          min = data['min_value']?.toDouble();
+          max = data['max_value']?.toDouble();
+          adc = data['adc_value'];
           state = data['state'];
         });
       } catch (e) {
