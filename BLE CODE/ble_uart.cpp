@@ -54,6 +54,8 @@ void loop() {
     String received = Serial2.readStringUntil('\n');
     Serial.println("Recibido desde Pico: " + received);
 
+    Serial.println(typeid(received).name());
+
     if (deviceConnected) {
       pCharacteristic->setValue(received.c_str());
       pCharacteristic->notify();

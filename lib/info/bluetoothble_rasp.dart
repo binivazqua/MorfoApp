@@ -163,26 +163,24 @@ class _TestBLEScreenState extends State<TestBLEScreen> {
                 int adcValue = jsonData['adc_value'];
                 String state = jsonData['state'];
 
+                print("Datos recibidos correctamente:");
                 print(
                     "Datos recibidos: avg_data: $average, max_value: $maxValue, min_value: $minValue, adc_value: $adcValue, state: $state");
 
-            
                 // El stream sigue vivo mientras se envían datos??
                 if (!jsonController.isClosed) {
                   jsonController.add(jsonString);
                 }
-                
               }
-              });
+            });
 
             // ir a página de graph
-            
+
             Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            jsonReadingsPage(jsonStream: jsonController.stream)))
-                .then((_) { 
+                context,
+                MaterialPageRoute(
+                    builder: (context) => jsonReadingsPage(
+                        jsonStream: jsonController.stream))).then((_) {
               jsonController.close();
               bleSubscription.cancel();
             });
@@ -540,8 +538,8 @@ class jsonReadingsPage extends StatefulWidget {
 }
 
 class _jsonReadingsPageState extends State<jsonReadingsPage> {
-
-  late async.StreamSubscription<String> jsonSubscription; // escucha el stream de datos json
+  late async.StreamSubscription<String>
+      jsonSubscription; // escucha el stream de datos json
   // Variables para almacenar los datos
   String? lastJsonString;
   double? average;
@@ -556,6 +554,7 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
     super.initState();
     // Escucha el stream y actualiza (lastJsonString) cada vez que recibe un nuevo dato
     jsonSubscription = widget.jsonStream.listen((jsonString) {
+      print("Raw JSON String: $jsonString");
       if (!mounted) return;
       setState(() {
         lastJsonString = jsonString;
@@ -566,7 +565,6 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
           max = (jsonData['max_value'] as num?)?.toDouble();
           adc = jsonData['adc_value'] as int?;
           state = jsonData['state'] as String?;
-
         } catch (e) {
           // Manejo de errores en caso de que el JSON no sea válido
           print('Error al decodificar JSON: $e');
@@ -577,7 +575,6 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
           state = null;
         }
       });
-
     });
   }
 
@@ -587,16 +584,26 @@ class _jsonReadingsPageState extends State<jsonReadingsPage> {
     jsonSubscription.cancel();
     super.dispose();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: lilyPurple,
-        backgroundColor: draculaPurple,
-        title: Image(
-            width: 120,
-            image: AssetImage(
-                'lib/design/logos/principal_morado'))), body: Column(children: [Text(lastJsonString!= null ? 'Datos:' : 'Esperando Datos'), Text('Average: ${average}'), Text('Min: ${min}'), Text('Max: ${max}'), Text('ADC: ${adc}'), Text('State: ${state}')],),);
+          foregroundColor: lilyPurple,
+          backgroundColor: draculaPurple,
+          title: Image(
+              width: 120,
+              image: AssetImage('lib/design/logos/principal_morado'))),
+      body: Column(
+        children: [
+          Text(lastJsonString != null ? 'Datos:' : 'Esperando Datos'),
+          Text('Average: ${average}'),
+          Text('Min: ${min}'),
+          Text('Max: ${max}'),
+          Text('ADC: ${adc}'),
+          Text('State: ${state}')
+        ],
+      ),
+    );
   }
 }
